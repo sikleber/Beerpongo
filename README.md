@@ -1,4 +1,4 @@
-# Beerpongo - Modularbeit BCN
+# Beerpongo
 
 ## Prerequisites
 - make (choco install make)
@@ -9,7 +9,7 @@
 - Docker (Windows: https://docs.docker.com/desktop/windows/install/)
 
   ```
-  [profile bierpongo-user]
+  [profile beerpongo-user]
   region=eu-central-1
   aws_access_key_id=XXX
   aws_secret_access_key=XXX
