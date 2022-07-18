@@ -1,0 +1,35 @@
+# prod configuration
+dynamoDB:
+  stackName: 'BeerpongoDynamoDbStackProd'
+  gamesTable:
+    id: 'BeerpongoProdGamesTable'
+    tableName: 'BeerpongoProdGamesTable'
+
+APIGateway:
+  stackName: 'BeerpongoAPIGatewayStackProd'
+  apiFile: './config/api_beerpongo.json'
+  id: 'BeerpongoProd-api'
+
+Lambda:
+  stackName: 'BeerpongoLambdaStackProd'
+  lambdas:
+    lambda_post:
+      name: "lambdaProd_post"
+      code: "./../backend/post_lambda"
+      handler: "lambda_post.post"
+      runtime: "python3.9"
+    lambda_get:
+      name: "lambdaProd_get"
+      code: "./../backend/get_lambda"
+      handler: "lambda_get.get"
+      runtime: "python3.9"
+    lambda_put:
+      name: "lambdaProd_put"
+      code: "./../backend/put_lambda"
+      handler: "lambda_put.put"
+      runtime: "python3.9"
+    lambda_join:
+      name: "lambdaProd_join"
+      code: "./../backend/join_lambda"
+      handler: "join_lambda.join_handler"
+      runtime: "python3.9"

@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aws-cdk-lib = "==2.24.1"
+constructs = "<11.0.0,>=10.0.0"
+pyyaml = "*"
+
+[dev-packages]
+flake8 = "*"
+black = "*"
+isort = "*"
+pytest = "*"
+pytest-cov = "*"
+
+[requires]
+python_version = "3.10"
