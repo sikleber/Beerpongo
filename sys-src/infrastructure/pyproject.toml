@@ -1,0 +1,28 @@
+[tool.pytest.ini_options]
+pythonpath = [
+ "cdk/"
+]
+
+[tool.black]
+skip-string-normalization = true
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | cdk.out
+)/
+'''
+
+[tool.isort]
+profile = "black"
+skip = ["cdk.out", ".venv"]
+line_length=79

@@ -1,0 +1,28 @@
+[tool.pytest.ini_options]
+pythonpath = [
+ "./"
+]
+
+[tool.black]
+skip-string-normalization = true
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | backend.out
+)/
+'''
+
+[tool.isort]
+profile = "black"
+skip = ["backend.out", ".venv"]
+line_length=79
