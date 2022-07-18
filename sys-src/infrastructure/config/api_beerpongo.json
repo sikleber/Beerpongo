@@ -1,0 +1,373 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API for Beerpongo",
+    "version": "1.0.0",
+    "title": "Beerpongo"
+  },
+  "tags": [
+    {
+      "name": "Game",
+      "description": "Operations for a game."
+    }
+  ],
+  "paths": {
+    "/game": {
+        "options": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "CORS"
+          ],
+          "x-amazon-apigateway-integration": {
+            "type": "mock",
+            "passthroughBehavior" : "when_no_match",
+            "requestTemplates": {
+              "application/json": "{\n  \"statusCode\" : 200\n}\n"
+            },
+            "responses": {
+              "default": {
+                "statusCode": "200",
+                "responseParameters": {
+                  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
+                  "method.response.header.Access-Control-Allow-Methods": "'*'",
+                  "method.response.header.Access-Control-Allow-Origin": "'*'"
+                },
+                "responseTemplates": {
+                  "application/json": "{}\n"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Default response for CORS method",
+              "headers": {
+                "Access-Control-Allow-Headers": {
+                  "type": "string"
+                },
+                "Access-Control-Allow-Methods": {
+                  "type": "string"
+                },
+                "Access-Control-Allow-Origin": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+      "post": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "Create a new game",
+        "description": "Creates a new game.",
+        "operationId": "create game",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "New game created.",
+            "headers": {
+              "Access-Control-Allow-Headers": {
+                  "type": "string"
+                },
+              "Access-Control-Allow-Methods": {
+                  "type": "string"
+                },
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+                }
+             },
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "400": {
+            "description": "Error"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "httpMethod": "POST",
+          "uri": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn-GAME_POST}/invocations",
+          "responses": {
+
+            "default": {
+              "statusCode": 200,
+              "responseParameters":{
+                "method.response.header.Access-Control-Allow-Origin" : "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws"
+        }
+      },
+      "put": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "Update an existing game",
+        "description": "",
+        "operationId": "updateGame",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Game-object that needs to be updated.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GameUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update ok",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+                }
+             }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "500": {
+            "description": "Error updating Game state"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "httpMethod": "POST",
+          "uri": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn-GAME_PUT}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters":{
+                "method.response.header.Access-Control-Allow-Origin" : "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws"
+        }
+      }
+    },
+    "/game/{GameId}": {
+      "get": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "Get an existing game",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "GameId",
+            "required": true,
+            "type": "integer",
+            "format": "int8"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game found",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+                }
+             },
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "404": {
+            "description": "Game not found"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "httpMethod": "POST",
+          "uri": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn-GAME_GET}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": 200,
+              "responseParameters":{
+                "method.response.header.Access-Control-Allow-Origin" : "'*'"
+              }
+            }
+          },
+          "requestTemplates": {
+            "application/json": "#set($allParams = $input.params())\n{\n\"params\" : {\n#foreach($type in $allParams.keySet())\n    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\n        #if($foreach.hasNext),#end\n    #end\n}\n    #if($foreach.hasNext),#end\n#end\n}\n}"
+          },
+          "passthroughBehavior": "when_no_match",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws"
+        }
+      }
+    },
+    "/join/{GameId}": {
+      "options": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "CORS"
+        ],
+        "x-amazon-apigateway-integration": {
+          "type": "mock",
+          "passthroughBehavior" : "when_no_match",
+          "requestTemplates": {
+            "application/json": "{\n  \"statusCode\" : 200\n}\n"
+          },
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseTemplates": {
+                "application/json": "{}\n"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default response for CORS method",
+            "headers": {
+              "Access-Control-Allow-Headers": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Methods": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "Join an exiting game",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "GameId",
+            "required": true,
+            "type": "integer",
+            "format": "int8"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game found",
+            "headers": {
+              "Access-Control-Allow-Headers": {
+                  "type": "string"
+                },
+              "Access-Control-Allow-Methods": {
+                  "type": "string"
+                },
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+                }
+             },
+            "schema": {
+              "$ref": "#/definitions/JoinGame"
+            }
+          },
+          "404": {
+            "description": "Game not found"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "httpMethod": "POST",
+          "uri": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn-GAME_JOIN}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": 200,
+              "responseParameters":{
+                "method.response.header.Access-Control-Allow-Origin" : "'*'"
+              }
+            }
+          },
+          "requestTemplates": {
+            "application/json": "#set($allParams = $input.params())\n{\n\"params\" : {\n#foreach($type in $allParams.keySet())\n    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\n        #if($foreach.hasNext),#end\n    #end\n}\n    #if($foreach.hasNext),#end\n#end\n}\n}"
+          },
+          "passthroughBehavior": "when_no_match",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Game": {
+      "type": "object",
+      "properties": {
+        "GameId": {
+          "type": "integer",
+          "format": "int8",
+          "description": "id of the game"
+        },
+        "State": {
+          "type": "string",
+          "description": "current state of the game in the form \"[ID]:[0-9, X],[ID]:[0-9, X],[ID]:[0-9, X],[ID]:[0-9, X],[ID]:[0-9, X]\""
+        }
+      }
+    },
+    "JoinGame": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int8",
+          "description": "id of the game"
+        },
+        "playerid": {
+          "type": "integer",
+          "format": "int8",
+          "description": "id for the new player"
+        }
+      }
+    },
+    "GameUpdate": {
+      "type": "object",
+      "properties": {
+        "GameId": {
+          "type": "integer",
+          "format": "int8",
+          "description": "id of the game"
+        },
+        "State": {
+          "type": "string",
+          "description": "[0-9, X]"
+        }
+      }
+    }
+  }
+}
