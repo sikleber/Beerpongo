@@ -14,7 +14,7 @@ def mock_config():
     yield {
         "APIGateway": {
             "stackName": "BeerpongoAPIGatewayStack",
-            "apiFile": "../config/api_beerpongo.json",
+            "apiFile": "./config/api_beerpongo.json",
             "id": "Beerpongo-api",
         }
     }
