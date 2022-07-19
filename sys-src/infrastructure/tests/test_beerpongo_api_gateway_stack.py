@@ -1,6 +1,7 @@
 import pytest
 from aws_cdk import App
 from aws_cdk.assertions import Template
+
 from stacks.beerpongo_api_gateway_stack import BeerpongoAPIGatewayStack
 
 
@@ -42,7 +43,7 @@ def template(apigateway_stack):
 
 
 def test_beerpongo_api_gateway_stack(
-    app, apigateway_stack, template: Template
+        app, apigateway_stack, template: Template
 ):
     template.has_resource_properties(
         "AWS::ApiGateway::RestApi",
@@ -75,10 +76,10 @@ def test_beerpongo_api_gateway_stack(
                             "x-amazon-apigateway-integration": {
                                 "httpMethod": "POST",
                                 "uri": "arn:${AWS::Partition}:apigateway"
-                                ":${"
-                                "AWS::Region}:lambda:path/2015-03"
-                                "-31/functions/post_LambdaName"
-                                "/invocations",
+                                       ":${"
+                                       "AWS::Region}:lambda:path/2015-03"
+                                       "-31/functions/post_LambdaName"
+                                       "/invocations",
                                 "responses": {
                                     "default": {"statusCode": 200}
                                 },
@@ -112,8 +113,8 @@ def test_beerpongo_api_gateway_stack(
                             "x-amazon-apigateway-integration": {
                                 "httpMethod": "POST",
                                 "uri": "arn:${AWS::Partition}:apigateway:${"
-                                "AWS::Region}:lambda:path/2015-03-31"
-                                "/functions/put_LambdaName/invocations",
+                                       "AWS::Region}:lambda:path/2015-03-31"
+                                       "/functions/put_LambdaName/invocations",
                                 "responses": {
                                     "default": {
                                         "statusCode": "200"
@@ -150,10 +151,10 @@ def test_beerpongo_api_gateway_stack(
                             "x-amazon-apigateway-integration": {
                                 "httpMethod": "POST",
                                 "uri": "arn:${AWS::Partition}:apigateway"
-                                ":${"
-                                "AWS::Region}:lambda:path/2015-03"
-                                "-31/functions/get_LambdaName"
-                                "/invocations",
+                                       ":${"
+                                       "AWS::Region}:lambda:path/2015-03"
+                                       "-31/functions/get_LambdaName"
+                                       "/invocations",
                                 "responses": {
                                     "default": {"statusCode": 200}
                                 },

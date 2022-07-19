@@ -2,6 +2,7 @@ import pytest
 from aws_cdk import App
 from aws_cdk.assertions import Template
 from aws_cdk.aws_s3_assets import Asset
+
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 
 
@@ -15,7 +16,7 @@ def mock_config():
     yield {
         "dynamoDB": {
             "stackName": 'BeerpongoDynamoDbStackDev',
-            "gamesTable":{
+            "gamesTable": {
                 "id": 'BeerpongoDevGamesTable',
                 "tableName": 'BeerpongoDevGamesTable'
             }
@@ -42,10 +43,10 @@ def mock_config():
                     "runtime": "python3.9",
                 },
                 "lambda_join": {
-                      "name": "lambdaDev_join",
-                      "code": "../backend/join_lambda",
-                      "handler": "join_lambda.join_handler",
-                      "runtime": "python3.9",
+                    "name": "lambdaDev_join",
+                    "code": "../backend/join_lambda",
+                    "handler": "join_lambda.join_handler",
+                    "runtime": "python3.9",
                 }
             }
         }
