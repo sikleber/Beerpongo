@@ -23,7 +23,7 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-**Important:** To use the correct api backend url in development mode the environment variable `BEERPONGO_BACKEND_URL` has to be set on your machine. \
+**Important:** To use the correct api backend url in development mode the environment variable `REACT_APP_BEERPONGO_BACKEND_URL` has to be set on your machine. \
 To check the environment variable you can run `npm run check-env`.
 
 The page will reload when you make changes.\
