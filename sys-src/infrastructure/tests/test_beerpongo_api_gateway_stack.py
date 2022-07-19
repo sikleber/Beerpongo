@@ -12,7 +12,7 @@ def app():
 @pytest.fixture
 def mock_config():
     yield {
-        "APIGateway": {
+        "apiGateway": {
             "stackName": "BeerpongoAPIGatewayStack",
             "apiFile": "./config/api_beerpongo.json",
             "id": "Beerpongo-api",

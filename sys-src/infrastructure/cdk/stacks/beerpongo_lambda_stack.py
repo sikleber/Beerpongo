@@ -14,7 +14,7 @@ class BeerpongoLambdaStack(Stack):
 
         dynamodb_config = config.get("dynamoDB")
         games_table_config = dynamodb_config.get("gamesTable")
-        lambda_config = config.get("Lambda")
+        lambda_config = config.get("lambda")
         post_config = lambda_config.get("lambdas").get("lambda_post")
         get_config = lambda_config.get("lambdas").get("lambda_get")
         put_config = lambda_config.get("lambdas").get("lambda_put")

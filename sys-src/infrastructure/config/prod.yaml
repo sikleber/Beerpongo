@@ -35,4 +35,10 @@ lambda:
       runtime: "python3.9"
 
 cognito:
-  stackName: 'BeerpongoCognitoStackDev'
+  stackName: 'BeerpongoCognitoStackProd'
+  userPool:
+    id: 'BeerpongoProdUserPool'
+    name: 'BeerpongoProdUserPool'
+  userPoolClient:
+    id: 'BeerpongoProdUserPoolClient'
+    name: 'BeerpongoProdUserPoolClient'

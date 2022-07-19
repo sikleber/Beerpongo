@@ -16,7 +16,7 @@ class BeerpongoAPIGatewayStack(Stack):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        apigateway_config = config.get("APIGateway")
+        apigateway_config = config.get("apiGateway")
         apiFile = apigateway_config["apiFile"]
         apiId = apigateway_config["id"]
 
@@ -28,7 +28,6 @@ class BeerpongoAPIGatewayStack(Stack):
         ARN_GAME_GET = "${LambdaArn-GAME_GET}"
         ARN_GAME_JOIN = "${LambdaArn-GAME_JOIN}"
 
-        filedata = None
         with open(apiFile, 'r') as file:
             filedata = file.read()
 

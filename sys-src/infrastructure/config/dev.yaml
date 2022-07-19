@@ -8,7 +8,7 @@ dynamoDB:
 apiGateway:
   stackName: 'BeerpongoAPIGatewayStackDev'
   apiFile: './config/api_beerpongo.json'
-  id: 'BeerpongoDev-api'
+  id: 'BeerpongoDevApi'
 
 lambda:
   stackName: 'BeerpongoLambdaStackDev'
@@ -36,4 +36,10 @@ lambda:
 
 cognito:
   stackName: 'BeerpongoCognitoStackDev'
+  userPool:
+    id: 'BeerpongoDevUserPool'
+    name: 'BeerpongoDevUserPool'
+  userPoolClient:
+    id: 'BeerpongoDevUserPoolClient'
+    name: 'BeerpongoDevUserPoolClient'
 
