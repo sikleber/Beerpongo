@@ -193,8 +193,7 @@ class GamePage extends React.Component{
                     let cupName;
                     let newClassName;
                     // iterate all hits
-                    for(let i = 0; i < hits.length; i++){
-                        let cup = hits[i];
+                    for(const cup of hits) {
                         cupName = undefined;
                         if (cup !== 'X' && !isNaN(parseInt(cup, 10))) {
                             if (id === "1") {
@@ -212,7 +211,7 @@ class GamePage extends React.Component{
                                 </div>
                             }
                         }
-                        if(cupName != undefined) {
+                        if(cupName !== undefined) {
                             // update the css for the hit cup
                             dict[cupName.concat("_className")] = newClassName;
                             // no reaction in clicks
@@ -247,27 +246,24 @@ class GamePage extends React.Component{
             dict[cupName.concat("_className")] = newClassName;
         }
 
-        let document = (
-            <div>
-                <p>ID: {this.state.gameId}</p>
-                <Field dictVal={dict}/>
-                <button onClick={() => {
-                    tryUpdatingGame(this.state.gameId,
-                        this.state.updateString).then((result)=>{
-                        this.resetUpdateString();
-                    });
-                }}>
-                    Spielzug beenden
-                </button>
-                {/* Quitting the game will lead the user to the game menu page */}
-                <nav>
-                    <Link to="/">Spiel Beenden</Link>
-                </nav>
-            </div>
-        );
-
         return (
-            document
+          <div>
+              <p>ID: {this.state.gameId}</p>
+              <h1>{this.state.activePlayer ? "Du bist am Zug" : "Der Gegner ist am Zug"}</h1>
+              <Field dictVal={dict}/>
+              <button onClick={() => {
+                  tryUpdatingGame(this.state.gameId,
+                    this.state.updateString).then((result) => {
+                      this.resetUpdateString();
+                  });
+              }}>
+                  Spielzug beenden
+              </button>
+              {/* Quitting the game will lead the user to the game menu page */}
+              <nav>
+                  <Link to="/">Spiel Beenden</Link>
+              </nav>
+          </div>
         );
 
     }
