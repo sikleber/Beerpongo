@@ -5,12 +5,12 @@ dynamoDB:
     id: 'BeerpongoDevGamesTable'
     tableName: 'BeerpongoDevGamesTable'
 
-APIGateway:
+apiGateway:
   stackName: 'BeerpongoAPIGatewayStackDev'
   apiFile: './config/api_beerpongo.json'
   id: 'BeerpongoDev-api'
 
-Lambda:
+lambda:
   stackName: 'BeerpongoLambdaStackDev'
   lambdas:
     lambda_post:
@@ -33,4 +33,7 @@ Lambda:
       code: "./../backend/join_lambda"
       handler: "join_lambda.join_handler"
       runtime: "python3.9"
+
+cognito:
+  stackName: 'BeerpongoCognitoStackDev'
 

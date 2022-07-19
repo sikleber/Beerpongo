@@ -6,6 +6,7 @@ import yaml
 from stacks.beerpongo_api_gateway_stack import BeerpongoAPIGatewayStack
 from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
+from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
 
 _logger = logging.getLogger("app")
 
@@ -40,13 +41,13 @@ def get_config():
 app = cdk.App()
 config = get_config()
 
-# Create dynamoDB stack
+# Create DynamoDB stack
 BeerpongoDynamoDbStack(app, config["dynamoDB"]["stackName"], config)
 
 # Create Lambda stack
-LambdaStack = BeerpongoLambdaStack(app, config["Lambda"]["stackName"], config)
+LambdaStack = BeerpongoLambdaStack(app, config["lambda"]["stackName"], config)
 
-
+# Extract lambda ARNs
 get_ARN = LambdaStack.lambda_get.function_arn
 post_ARN = LambdaStack.lambda_post.function_arn
 put_ARN = LambdaStack.lambda_put.function_arn
@@ -61,6 +62,14 @@ info = {
 
 # Create API-Gateway stack
 BeerpongoAPIGatewayStack(
-    app, config["APIGateway"]["stackName"], config, LambdaInfo=info
+    app, config["apiGateway"]["stackName"], config, LambdaInfo=info
 )
+
+
+# Create Cognito stack
+BeerpongoCognitoStack(
+    app, config["cognito"]["stackName"], config
+)
+
+
 app.synth()
