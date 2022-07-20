@@ -8,7 +8,7 @@ dynamoDB:
 apiGateway:
   stackName: 'BeerpongoAPIGatewayStackProd'
   apiFile: './config/api_beerpongo.json'
-  id: 'BeerpongoProd-api'
+  id: 'BeerpongoProdApi'
 
 lambda:
   stackName: 'BeerpongoLambdaStackProd'
