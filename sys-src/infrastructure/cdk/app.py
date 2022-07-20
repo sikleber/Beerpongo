@@ -3,7 +3,9 @@ import logging
 
 import aws_cdk as cdk
 import yaml
+
 from stacks.beerpongo_api_gateway_stack import BeerpongoAPIGatewayStack
+from stacks.beerpongo_api_gateway_websocket_stack import BeerpongoApiGatewayWebsocketStack
 from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 
@@ -21,7 +23,7 @@ def get_config():
     try:
         env = app.node.try_get_context("config")
         with open(
-            file="./config/" + env + ".yaml", mode="r", encoding="utf8"
+                file="./config/" + env + ".yaml", mode="r", encoding="utf8"
         ) as stream:
             try:
                 c = yaml.safe_load(stream)
@@ -46,7 +48,6 @@ BeerpongoDynamoDbStack(app, config["dynamoDB"]["stackName"], config)
 # Create Lambda stack
 LambdaStack = BeerpongoLambdaStack(app, config["Lambda"]["stackName"], config)
 
-
 get_ARN = LambdaStack.lambda_get.function_arn
 post_ARN = LambdaStack.lambda_post.function_arn
 put_ARN = LambdaStack.lambda_put.function_arn
@@ -63,4 +64,14 @@ info = {
 BeerpongoAPIGatewayStack(
     app, config["APIGateway"]["stackName"], config, LambdaInfo=info
 )
+
+# Create API-Gateway websocket stack
+BeerpongoApiGatewayWebsocketStack(
+    app, config["apiGatewayWebsocket"]["stackName"], config, route_lambdas={
+        "connectRoute": LambdaStack.lambda_on_connect,
+        "disconnectRoute": LambdaStack.lambda_on_disconnect,
+        "updateGameRoute": LambdaStack.lambda_on_game_update
+    }
+)
+
 app.synth()

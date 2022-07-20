@@ -10,6 +10,21 @@ APIGateway:
   apiFile: './config/api_beerpongo.json'
   id: 'BeerpongoDev-api'
 
+apiGatewayWebsocket:
+  stackName: 'BeerpongoAPIGatewayWebsocketStackDev'
+  id: 'BeerpongoDevWebsocketApi'
+  name: 'BeerpongoDevWebsocketApi'
+  stage:
+    id: 'BeerpongoWebsocketStageDev'
+    name: 'dev'
+  connectRoute:
+    id: 'ConnectGameIntegrationDev'
+  disconnectRoute:
+    id: 'DisconnectGameIntegrationDev'
+  updateGameRoute:
+    key: 'updateGame'
+    id: 'UpdateGameIntegrationDev'
+
 Lambda:
   stackName: 'BeerpongoLambdaStackDev'
   lambdas:
@@ -32,5 +47,20 @@ Lambda:
       name: "lambdaDev_join"
       code: "./../backend/join_lambda"
       handler: "join_lambda.join_handler"
+      runtime: "python3.9"
+    lambda_on_connect:
+      name: "lambdaDev_connect"
+      code: "./../backend/websocket_lambdas/lambda_on_connect"
+      handler: "lambda_on_connect.on_connect"
+      runtime: "python3.9"
+    lambda_on_disconnect:
+      name: "lambdaDev_disconnect"
+      code: "./../backend/websocket_lambdas/lambda_on_disconnect"
+      handler: "lambda_on_disconnect.on_disconnect"
+      runtime: "python3.9"
+    lambda_on_update_game:
+      name: "lambdaDev_updateGame"
+      code: "./../backend/websocket_lambdas/lambda_on_update_game"
+      handler: "lambda_on_update_game.on_update_game"
       runtime: "python3.9"
 

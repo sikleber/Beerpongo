@@ -3,7 +3,7 @@
 ## Prerequisites
 - make (choco install make)
 - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-- aws-cdk (npm install -g aws-cdk)
+- aws-cdk (npm install -g aws-cdk) (last used version: 2.24.1)
 - aws-cdk profile: Add following to ~/.aws/config
 - Node.js (https://nodejs.org/)
 - Docker (Windows: https://docs.docker.com/desktop/windows/install/)
