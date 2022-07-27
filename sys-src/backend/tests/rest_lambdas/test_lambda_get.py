@@ -1,4 +1,4 @@
-from get_lambda.lambda_get import get
+from rest_lambdas.get_lambda.lambda_get import get
 import boto3
 import os
 import pytest

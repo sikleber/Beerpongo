@@ -1,4 +1,4 @@
-from join_lambda.join_lambda import join_handler
+from rest_lambdas.join_lambda.lambda_join import join
 import boto3
 import os
 import pytest
@@ -39,7 +39,7 @@ def test_join_lambda(aws_credentials):
         "GameId": {
             "S": "1"
         },
-        "playerCount" : {
+        "PlayerCount" : {
             "N": "1"
         }
     },
@@ -48,13 +48,13 @@ def test_join_lambda(aws_credentials):
 
     # test if the right playerid is returned
     event = {"params": {"path": {"GameId" : "1"}}}
-    resp = join_handler(event, {})
+    resp = join(event, {})
 
     assert resp["statusCode"] == "200"
     assert resp["body"]["playerid"] == 2
 
     # test if the right error ist returned, if the gameID does not exist
     event = {"params": {"path": {"GameId" : "a"}}}
-    resp = join_handler(event, {})
+    resp = join(event, {})
 
     assert resp["statusCode"] == "404"

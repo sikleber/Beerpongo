@@ -6,7 +6,7 @@ import boto3
 import pytest
 from moto import mock_dynamodb
 
-from post_lambda.lambda_post import post
+from rest_lambdas.post_lambda.lambda_post import post
 
 table_name = 'test_table'
 
@@ -60,12 +60,12 @@ def test_post(dynamodb):
     assert len(body) == 3
     assert body["GameId"] == test_game_id
     assert body["State"] == ""
-    assert body["playerCount"] == 1
+    assert body["PlayerCount"] == 1
 
     # assert game item in dynamodb
     data = dynamodb.Table(table_name).scan()
     assert data['Count'] == 1
-    assert data['Items'][0] == {'GameId': test_game_id, 'State': '', "playerCount": 1}
+    assert data['Items'][0] == {'GameId': test_game_id, 'State': '', "PlayerCount": 1}
 
 
 @mock_dynamodb

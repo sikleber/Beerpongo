@@ -1,4 +1,4 @@
-def on_dis_connect(event, context):
+def on_disconnect(event, context):
     print(str(event))
 
     return {

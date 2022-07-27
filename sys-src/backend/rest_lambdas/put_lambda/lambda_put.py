@@ -1,7 +1,7 @@
 import json
-import boto3
 import os
 
+import boto3
 
 
 def put(event, context):

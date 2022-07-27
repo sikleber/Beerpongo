@@ -48,7 +48,7 @@ def post(event, context):
             raise "Game item with id=%s already exists" % game_id
 
         # put new item into database
-        new_game = {"GameId": game_id, "State": "", "playerCount": 1}
+        new_game = {"GameId": game_id, "State": "", "PlayerCount": 1}
         table.put_item(Item=new_game)
 
         return {

@@ -11,7 +11,6 @@ class BeerpongoLambdaStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # Read the config
-
         dynamodb_config = config.get("dynamoDB")
         games_table_config = dynamodb_config.get("gamesTable")
         lambda_config = config.get("Lambda")
@@ -58,29 +57,29 @@ class BeerpongoLambdaStack(Stack):
         )
 
         # Create Websocket lambdas
-        connect_config = lambda_config.get("lambdas").get("lambda_on_connect")
-        disconnect_config = lambda_config.get("lambdas").get("lambda_on_disconnect")
+        create_game_config = lambda_config.get("lambdas").get("lambda_on_create_game")
+        join_game_config = lambda_config.get("lambdas").get("lambda_on_join_game")
         update_game_config = lambda_config.get("lambdas").get("lambda_on_update_game")
 
-        self.lambda_on_connect = lambda_.Function(
+        self.lambda_on_create_game = lambda_.Function(
             self,
-            id=connect_config["name"],
-            runtime=lambda_.Runtime(connect_config["runtime"]),
-            handler=connect_config["handler"],
-            code=lambda_.Code.from_asset(connect_config["code"]),
+            id=create_game_config["name"],
+            runtime=lambda_.Runtime(create_game_config["runtime"]),
+            handler=create_game_config["handler"],
+            code=lambda_.Code.from_asset(create_game_config["code"]),
             environment={"DB_TABLE": games_table_config["tableName"]}
         )
 
-        self.lambda_on_disconnect = lambda_.Function(
+        self.lambda_on_join_game = lambda_.Function(
             self,
-            id=disconnect_config["name"],
-            runtime=lambda_.Runtime(disconnect_config["runtime"]),
-            handler=disconnect_config["handler"],
-            code=lambda_.Code.from_asset(disconnect_config["code"]),
+            id=join_game_config["name"],
+            runtime=lambda_.Runtime(join_game_config["runtime"]),
+            handler=join_game_config["handler"],
+            code=lambda_.Code.from_asset(join_game_config["code"]),
             environment={"DB_TABLE": games_table_config["tableName"]}
         )
 
-        self.lambda_on_game_update = lambda_.Function(
+        self.lambda_on_update_game = lambda_.Function(
             self,
             id=update_game_config["name"],
             runtime=lambda_.Runtime(update_game_config["runtime"]),
@@ -110,6 +109,21 @@ class BeerpongoLambdaStack(Stack):
             resources=["*"]
         ))
 
+        self.lambda_on_create_game.add_to_role_policy(PolicyStatement(
+            actions=["dynamodb:GetItem", "dynamodb:PutItem"],
+            resources=["*"]
+        ))
+
+        self.lambda_on_join_game.add_to_role_policy(PolicyStatement(
+            actions=["dynamodb:GetItem", "dynamodb:PutItem"],
+            resources=["*"]
+        ))
+
+        self.lambda_on_update_game.add_to_role_policy(PolicyStatement(
+            actions=["dynamodb:GetItem", "dynamodb:PutItem", 'execute-api:ManageConnections'],
+            resources=["*"]
+        ))
+
         self.lambda_get.add_permission(
             principal=ServicePrincipal('apigateway.amazonaws.com'),
             action='lambda:InvokeFunction',
@@ -134,20 +148,20 @@ class BeerpongoLambdaStack(Stack):
             id="apigateway-put-permission"
         )
 
-        self.lambda_on_connect.add_permission(
+        self.lambda_on_create_game.add_permission(
             principal=ServicePrincipal('apigateway.amazonaws.com'),
             action='lambda:InvokeFunction',
-            id="apigateway-connect-permission"
+            id="apigateway-ws-create-game-permission"
         )
 
-        self.lambda_on_disconnect.add_permission(
+        self.lambda_on_join_game.add_permission(
             principal=ServicePrincipal('apigateway.amazonaws.com'),
             action='lambda:InvokeFunction',
-            id="apigateway-disconnect-permission"
+            id="apigateway-ws-join-game-permission"
         )
 
-        self.lambda_on_game_update.add_permission(
+        self.lambda_on_update_game.add_permission(
             principal=ServicePrincipal('apigateway.amazonaws.com'),
             action='lambda:InvokeFunction',
-            id="apigateway-game-update-permission"
+            id="apigateway-ws-update-game-permission"
         )

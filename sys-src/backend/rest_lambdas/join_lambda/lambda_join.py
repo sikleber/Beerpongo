@@ -1,8 +1,9 @@
-import boto3
 import os
 
-def join_handler(event, context):
-  
+import boto3
+
+
+def join(event, context):
     """
     Increments the playerCount in the gameTable and
     sends the incremented ID back to the player.
@@ -19,15 +20,12 @@ def join_handler(event, context):
             404 Error gameId not found
     """
 
-
     table_name = os.environ["DB_TABLE"]
-
 
     client = boto3.resource("dynamodb")
     table = client.Table(table_name)
 
     gameid = event['params']['path']['GameId']
-
 
     data = table.get_item(
         Key={
@@ -40,9 +38,7 @@ def join_handler(event, context):
     except KeyError:
         return {"statusCode": "404"}
 
-
-    item['playerCount'] += 1
-
+    item['PlayerCount'] += 1
 
     try:
         table.put_item(Item=item)
@@ -50,13 +46,11 @@ def join_handler(event, context):
     except:
         return {'statusCode': 500, 'exception': "Error receiving playerId"}
 
-
     response = {
-            "statusCode": "200",
-            "body": {
-                "id": gameid, "playerid": item['playerCount']
-            }
+        "statusCode": "200",
+        "body": {
+            "id": gameid, "playerid": item['PlayerCount']
+        }
     }
-
 
     return response

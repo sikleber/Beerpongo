@@ -68,9 +68,9 @@ BeerpongoAPIGatewayStack(
 # Create API-Gateway websocket stack
 BeerpongoApiGatewayWebsocketStack(
     app, config["apiGatewayWebsocket"]["stackName"], config, route_lambdas={
-        "connectRoute": LambdaStack.lambda_on_connect,
-        "disconnectRoute": LambdaStack.lambda_on_disconnect,
-        "updateGameRoute": LambdaStack.lambda_on_game_update
+        "createGameRoute": LambdaStack.lambda_on_create_game,
+        "joinGameRoute": LambdaStack.lambda_on_join_game,
+        "updateGameRoute": LambdaStack.lambda_on_update_game,
     }
 )
 

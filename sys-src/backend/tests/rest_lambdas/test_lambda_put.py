@@ -1,6 +1,6 @@
 import pytest
 import os
-from put_lambda.lambda_put import put
+from rest_lambdas.put_lambda.lambda_put import put
 from moto import mock_dynamodb
 import boto3
 
