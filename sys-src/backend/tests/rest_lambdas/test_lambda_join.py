@@ -1,8 +1,10 @@
-from rest_lambdas.join_lambda.lambda_join import join
-import boto3
 import os
+
+import boto3
 import pytest
 from moto import mock_dynamodb
+
+from rest_lambdas.join_lambda.lambda_join import join
 
 table_name = "test_table"
 
@@ -20,7 +22,7 @@ def aws_credentials():
 @mock_dynamodb
 def test_join_lambda(aws_credentials):
     # creating test_table
-    
+
     os.environ['DB_TABLE'] = table_name
     dynamodb = boto3.client("dynamodb")
     dynamodb.create_table(
@@ -35,26 +37,20 @@ def test_join_lambda(aws_credentials):
     )
 
     # creating test_item
-    dynamodb.put_item(Item={
-        "GameId": {
-            "S": "1"
-        },
-        "PlayerCount" : {
-            "N": "1"
-        }
-    },
-        TableName=table_name
+    dynamodb.put_item(
+        Item={"GameId": {"S": "1"}, "PlayerCount": {"N": "1"}},
+        TableName=table_name,
     )
 
     # test if the right playerid is returned
-    event = {"params": {"path": {"GameId" : "1"}}}
+    event = {"params": {"path": {"GameId": "1"}}}
     resp = join(event, {})
 
     assert resp["statusCode"] == "200"
     assert resp["body"]["playerid"] == 2
 
     # test if the right error ist returned, if the gameID does not exist
-    event = {"params": {"path": {"GameId" : "a"}}}
+    event = {"params": {"path": {"GameId": "a"}}}
     resp = join(event, {})
 
     assert resp["statusCode"] == "404"

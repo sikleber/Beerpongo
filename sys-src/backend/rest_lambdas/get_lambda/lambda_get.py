@@ -1,6 +1,6 @@
-import boto3
 import os
 
+import boto3
 
 
 def get(event, context):
@@ -17,7 +17,6 @@ def get(event, context):
     """
     table_name = os.environ['DB_TABLE']
 
-
     # Defining access to database
     res = boto3.resource("dynamodb")
     table = res.Table(table_name)
@@ -25,20 +24,13 @@ def get(event, context):
     # Getting item for id given by the event
     item_id = event['params']['path']['GameId']
 
-    data = table.get_item(
-        Key={
-            'GameId': item_id
-        }
-    )
+    data = table.get_item(Key={'GameId': item_id})
 
     try:
         item = data['Item']
     except KeyError:
         return {"statusCode": 404}
 
-    response = {
-        "statusCode": 200,
-        "body": item
-    }
+    response = {"statusCode": 200, "body": item}
 
     return response

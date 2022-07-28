@@ -1,8 +1,8 @@
 import json
 import logging
+import os
 import random
 import string
-import os
 
 import boto3
 
@@ -31,7 +31,7 @@ def post(event, context):
             500 Error creating the Game item
     """
     table_name = os.environ['DB_TABLE']
-    
+
     # set game id if present, else generate one
     if "GameId" in event:
         game_id = event['GameId']
@@ -51,9 +51,7 @@ def post(event, context):
         new_game = {"GameId": game_id, "State": "", "PlayerCount": 1}
         table.put_item(Item=new_game)
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps(new_game)}
+        return {"statusCode": 200, "body": json.dumps(new_game)}
     except Exception:
         logging.exception("Failed to put new game item")
         return {"statusCode": 500}

@@ -11,7 +11,7 @@ def join(event, context):
 
      Provide an event, that contains the following keys in 'params:path':
         - GameId
-  
+
     :param:  event: the lambda call event containing all given parameters
     :param:  context: the lambda call context
     :return: response: JSON with http Status Code
@@ -25,13 +25,9 @@ def join(event, context):
     client = boto3.resource("dynamodb")
     table = client.Table(table_name)
 
-    gameid = event['params']['path']['GameId']
+    game_id = event['params']['path']['GameId']
 
-    data = table.get_item(
-        Key={
-            'GameId': gameid
-        }
-    )
+    data = table.get_item(Key={'GameId': game_id})
 
     try:
         item = data['Item']
@@ -43,14 +39,12 @@ def join(event, context):
     try:
         table.put_item(Item=item)
 
-    except:
+    except Exception:
         return {'statusCode': 500, 'exception': "Error receiving playerId"}
 
     response = {
         "statusCode": "200",
-        "body": {
-            "id": gameid, "playerid": item['PlayerCount']
-        }
+        "body": {"id": game_id, "playerid": item['PlayerCount']},
     }
 
     return response

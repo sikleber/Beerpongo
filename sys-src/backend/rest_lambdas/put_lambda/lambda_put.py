@@ -9,7 +9,7 @@ def put(event, context):
     Provide an event, that contains the following keys:
         - id: GameId composed of 8 characters
         - state in the form '[ID]:[0-9, X]'
-    
+
     Requires a role with read/write access to DynamoDB.
 
     :param:  event: the lambda call event containing all given parameters
@@ -28,11 +28,7 @@ def put(event, context):
     table = boto3.resource("dynamodb").Table(table_name)
 
     # Get the item that will be changed
-    data = table.get_item(
-        Key={
-            "GameId": id
-        }
-    )
+    data = table.get_item(Key={"GameId": id})
 
     try:
         item = data['Item']
@@ -40,14 +36,14 @@ def put(event, context):
     # if item doesn't exist
     except KeyError:
         return {'statusCode': 400, 'exception': "Game not found"}
-    except:
+    except Exception:
         return {'statusCode': 500, 'exception': "Error updating Game"}
 
     # get length of state
     len_state = len(item['State'])
 
     # update state string
-    if (len_state == 0):
+    if len_state == 0:
         item['State'] += state
     else:
         item['State'] += "," + state
@@ -56,13 +52,13 @@ def put(event, context):
     try:
         table.put_item(Item=item)
 
-    except:
+    except Exception:
         return {'statusCode': 500, 'exception': "Error updating Game"}
 
     # if all went well
     response = {
         'statusCode': 200,
-        'body': json.dumps({"message": f"Game State of Game {id} updated"})
+        'body': json.dumps({"message": f"Game State of Game {id} updated"}),
     }
 
     return response

@@ -1,8 +1,10 @@
-import pytest
 import os
-from rest_lambdas.put_lambda.lambda_put import put
-from moto import mock_dynamodb
+
 import boto3
+import pytest
+from moto import mock_dynamodb
+
+from rest_lambdas.put_lambda.lambda_put import put
 
 table_name = "testTable"
 
@@ -19,7 +21,7 @@ def aws_credentials():
 
 @mock_dynamodb
 def test_put_lambda(aws_credentials):
-    
+
     os.environ['DB_TABLE'] = table_name
     dynamodb = boto3.client('dynamodb')
     dynamodb.create_table(
@@ -30,19 +32,13 @@ def test_put_lambda(aws_credentials):
         AttributeDefinitions=[
             {'AttributeName': 'GameId', 'AttributeType': 'S'},
         ],
-        BillingMode="PAY_PER_REQUEST"
+        BillingMode="PAY_PER_REQUEST",
     )
 
     startstate = "0:6,1:2"
-    dynamodb.put_item(Item={
-        "GameId": {
-            "S": "1"
-        },
-        "State": {
-            "S": startstate
-        }
-    },
-        TableName=table_name
+    dynamodb.put_item(
+        Item={"GameId": {"S": "1"}, "State": {"S": startstate}},
+        TableName=table_name,
     )
 
     # ----- check if we can Update--------
@@ -55,16 +51,14 @@ def test_put_lambda(aws_credentials):
         "state": p1_state,
     }
     response = put(event, {})
-    assert response == {'statusCode': 200, 'body': '{"message": "Game State of Game 1 updated"}'}
+    assert response == {
+        'statusCode': 200,
+        'body': '{"message": "Game State of Game 1 updated"}',
+    }
 
     # ----check if item was really updated------
 
-    data = dynamodb.get_item(
-        Key={
-            "GameId": {"S": "1"}
-        },
-        TableName=table_name
-    )
+    data = dynamodb.get_item(Key={"GameId": {"S": "1"}}, TableName=table_name)
 
     assert data["Item"]["State"]["S"] == startstate + "," + p1_state
 
