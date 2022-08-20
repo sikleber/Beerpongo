@@ -5,32 +5,42 @@ dynamoDB:
     id: 'BeerpongoDevGamesTable'
     tableName: 'BeerpongoDevGamesTable'
 
-APIGateway:
-  stackName: 'BeerpongoAPIGatewayStackDev'
-  apiFile: './config/api_beerpongo.json'
-  id: 'BeerpongoDev-api'
-
 Lambda:
   stackName: 'BeerpongoLambdaStackDev'
   lambdas:
-    lambda_post:
-      name: "lambdaDev_post"
-      code: "./../backend/post_lambda"
-      handler: "lambda_post.post"
+    lambda_on_create_game:
+      name: "lambdaDev_createGame"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_on_create_game.on_create_game"
       runtime: "python3.9"
-    lambda_get:
-      name: "lambdaDev_get"
-      code: "./../backend/get_lambda"
-      handler: "lambda_get.get"
+    lambda_on_join_game:
+      name: "lambdaDev_joinGame"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_on_join_game.on_join_game"
       runtime: "python3.9"
-    lambda_put:
-      name: "lambdaDev_put"
-      code: "./../backend/put_lambda"
-      handler: "lambda_put.put"
+    lambda_on_update_game:
+      name: "lambdaDev_updateGame"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_on_update_game.on_update_game"
       runtime: "python3.9"
-    lambda_join:
-      name: "lambdaDev_join"
-      code: "./../backend/join_lambda"
-      handler: "join_lambda.join_handler"
-      runtime: "python3.9"
+
+apiGatewayWebsocket:
+  stackName: 'BeerpongoAPIGatewayWebsocketStackDev'
+  id: 'BeerpongoDevWebsocketApi'
+  name: 'BeerpongoDevWebsocketApi'
+  stage:
+    id: 'BeerpongoWebsocketStageDev'
+    name: 'dev'
+  createGameRoute:
+    id: 'CreateGameIntegrationDev'
+    responseId: 'CreateGameIntegrationDev'
+    key: 'CreateGame'
+  joinGameRoute:
+    id: 'JoinGameIntegrationDev'
+    responseId: 'JoinGameIntegrationDev'
+    key: 'JoinGame'
+  updateGameRoute:
+    id: 'UpdateGameIntegrationDev'
+    responseId: 'UpdateGameIntegrationDev'
+    key: 'UpdateGame'
 

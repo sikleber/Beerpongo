@@ -3,7 +3,9 @@ import logging
 
 import aws_cdk as cdk
 import yaml
-from stacks.beerpongo_api_gateway_stack import BeerpongoAPIGatewayStack
+from stacks.beerpongo_api_gateway_websocket_stack import (
+    BeerpongoApiGatewayWebsocketStack,
+)
 from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 
@@ -46,21 +48,16 @@ BeerpongoDynamoDbStack(app, config["dynamoDB"]["stackName"], config)
 # Create Lambda stack
 LambdaStack = BeerpongoLambdaStack(app, config["Lambda"]["stackName"], config)
 
-
-get_ARN = LambdaStack.lambda_get.function_arn
-post_ARN = LambdaStack.lambda_post.function_arn
-put_ARN = LambdaStack.lambda_put.function_arn
-join_ARN = LambdaStack.lambda_join.function_arn
-
-info = {
-    "get_LambdaName": get_ARN,
-    "post_LambdaName": post_ARN,
-    "put_LambdaName": put_ARN,
-    "join_LambdaName": join_ARN
-}
-
-# Create API-Gateway stack
-BeerpongoAPIGatewayStack(
-    app, config["APIGateway"]["stackName"], config, LambdaInfo=info
+# Create API-Gateway websocket stack
+BeerpongoApiGatewayWebsocketStack(
+    app,
+    config["apiGatewayWebsocket"]["stackName"],
+    config,
+    route_lambdas={
+        "createGameRoute": LambdaStack.lambda_on_create_game,
+        "joinGameRoute": LambdaStack.lambda_on_join_game,
+        "updateGameRoute": LambdaStack.lambda_on_update_game,
+    },
 )
+
 app.synth()
