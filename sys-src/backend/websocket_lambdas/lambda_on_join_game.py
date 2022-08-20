@@ -46,11 +46,11 @@ def on_join_game(event, context):
         return {"statusCode": 500}
 
     return {
-        "statusCode": "200",
+        "statusCode": 200,
         "body": json.dumps(
             {
                 "GameId": game_id,
-                "PlayerId": str(item["PlayerCount"]),
+                "PlayerCount": str(item["PlayerCount"]),
                 "State": item["State"],
             }
         ),
