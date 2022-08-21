@@ -6,9 +6,9 @@ import yaml
 from stacks.beerpongo_api_gateway_websocket_stack import (
     BeerpongoApiGatewayWebsocketStack,
 )
+from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
 from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
-from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
 
 _logger = logging.getLogger("app")
 
@@ -62,8 +62,6 @@ BeerpongoApiGatewayWebsocketStack(
 )
 
 # Create Cognito stack
-BeerpongoCognitoStack(
-    app, config["cognito"]["stackName"], config
-)
+BeerpongoCognitoStack(app, config["cognito"]["stackName"], config)
 
 app.synth()

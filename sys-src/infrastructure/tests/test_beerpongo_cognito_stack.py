@@ -1,7 +1,6 @@
 import pytest
 from aws_cdk import App
-from aws_cdk.assertions import Template, Match
-
+from aws_cdk.assertions import Match, Template
 from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
 
 
@@ -17,12 +16,12 @@ def mock_config():
             "stackName": 'BeerpongoCognitoStack',
             "userPool": {
                 "id": 'BeerpongoUserPool',
-                "name": 'BeerpongoUserPool'
+                "name": 'BeerpongoUserPool',
             },
             "userPoolClient": {
                 "id": 'BeerpongoUserPoolClient',
-                "name": 'BeerpongoUserPoolClient'
-            }
+                "name": 'BeerpongoUserPoolClient',
+            },
         }
     }
 
@@ -46,19 +45,11 @@ def test_beerpongo_cognito_user_pool(template: Template):
             "UserPoolName": "BeerpongoUserPool",
             "AccountRecoverySetting": {
                 "RecoveryMechanisms": [
-                    {
-                        "Name": "verified_phone_number",
-                        "Priority": 1
-                    },
-                    {
-                        "Name": "verified_email",
-                        "Priority": 2
-                    }
+                    {"Name": "verified_phone_number", "Priority": 1},
+                    {"Name": "verified_email", "Priority": 2},
                 ]
             },
-            "AdminCreateUserConfig": {
-                "AllowAdminCreateUserOnly": True
-            },
+            "AdminCreateUserConfig": {"AllowAdminCreateUserOnly": True},
             "EmailVerificationMessage": "The verification code to your new account is {####}",
             "EmailVerificationSubject": "Verify your new account",
             "SmsVerificationMessage": "The verification code to your new account is {####}",
@@ -66,9 +57,9 @@ def test_beerpongo_cognito_user_pool(template: Template):
                 "DefaultEmailOption": "CONFIRM_WITH_CODE",
                 "EmailMessage": "The verification code to your new account is {####}",
                 "EmailSubject": "Verify your new account",
-                "SmsMessage": "The verification code to your new account is {####}"
-            }
-        }
+                "SmsMessage": "The verification code to your new account is {####}",
+            },
+        },
     )
 
 
@@ -80,23 +71,16 @@ def test_beerpongo_cognito_user_pool_client(template: Template):
                 "Ref": Match.string_like_regexp("BeerpongoUserPool.*")
             },
             "ClientName": "BeerpongoUserPoolClient",
-            "AllowedOAuthFlows": [
-                "implicit",
-                "code"
-            ],
+            "AllowedOAuthFlows": ["implicit", "code"],
             "AllowedOAuthFlowsUserPoolClient": True,
             "AllowedOAuthScopes": [
                 "profile",
                 "phone",
                 "email",
                 "openid",
-                "aws.cognito.signin.user.admin"
+                "aws.cognito.signin.user.admin",
             ],
-            "CallbackURLs": [
-                "https://example.com"
-            ],
-            "SupportedIdentityProviders": [
-                "COGNITO"
-            ]
+            "CallbackURLs": ["https://example.com"],
+            "SupportedIdentityProviders": ["COGNITO"],
         },
     )

@@ -2,7 +2,6 @@ import pytest
 from aws_cdk import App
 from aws_cdk.assertions import Template
 from aws_cdk.aws_s3_assets import Asset
-
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 
 
@@ -18,8 +17,8 @@ def mock_config():
             "stackName": 'BeerpongoDynamoDbStackDev',
             "gamesTable": {
                 "id": 'BeerpongoDevGamesTable',
-                "tableName": 'BeerpongoDevGamesTable'
-            }
+                "tableName": 'BeerpongoDevGamesTable',
+            },
         },
         "lambda": {
             "stackName": "LambdaStackDev",

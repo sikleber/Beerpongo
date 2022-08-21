@@ -1,7 +1,7 @@
 import aws_cdk.aws_lambda as lambda_
 from aws_cdk import Stack
-from constructs import Construct
 from aws_cdk.aws_iam import PolicyStatement, ServicePrincipal
+from constructs import Construct
 
 
 class BeerpongoLambdaStack(Stack):
