@@ -24,7 +24,7 @@ def mock_config():
                 "tableName": 'BeerpongoDevGamesTable',
             },
         },
-        "Lambda": {
+        "lambda": {
             "stackName": "LambdaStackDev",
             "lambdas": {
                 "lambda_on_create_game": {
