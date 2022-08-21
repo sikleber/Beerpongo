@@ -16,7 +16,7 @@ describe('tryGettingGame', () => {
                 "body": {
                     "GameId": "1234ABC",
                     "State": "1:X",
-                    "playerCount": 1
+                    "PlayerCount": 1
                 },
             },      
             headers:{
