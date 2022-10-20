@@ -27,6 +27,18 @@ def mock_config():
         "lambda": {
             "stackName": "LambdaStackDev",
             "lambdas": {
+                "lambda_authenticate_websocket": {
+                    "name": "lambdaDev_authenticate_websocket",
+                    "code": "./../backend/websocket_lambdas",
+                    "handler": "lambda_authenticate_websocket.on_connect",
+                    "runtime": 'python3.9',
+                },
+                "lambda_on_connect": {
+                    "name": "lambdaDev_connect_websocket",
+                    "code": "./../backend/websocket_lambdas",
+                    "handler": "lambda_on_connect.on_connect",
+                    "runtime": 'python3.9',
+                },
                 "lambda_on_create_game": {
                     "name": "lambdaDev_createGame",
                     "code": "./../backend/websocket_lambdas",
@@ -51,6 +63,8 @@ def mock_config():
             "stackName": "BeerpongoWebsocketStack",
             "id": "BeerpongoWebsocketStackId",
             "name": "BeerpongoWebsocketApi",
+            "authorizerId": 'CognitoUserDevAuthorizerId',
+            "connectRouteIntegrationId": 'ConnectWebsocketIntegrationDev',
             "stage": {
                 "id": 'BeerpongoWebsocketStageDev',
                 "name": "dev",
@@ -106,12 +120,24 @@ def route_lambdas(lambda_stack):
 
 
 @pytest.fixture
-def websocket_stack(app, mock_config, route_lambdas):
+def auth_handler(lambda_stack):
+    yield lambda_stack.lambda_authenticate_websocket
+
+
+@pytest.fixture
+def connect_handler(lambda_stack):
+    yield lambda_stack.lambda_connect_websocket
+
+
+@pytest.fixture
+def websocket_stack(app, mock_config, route_lambdas, auth_handler, connect_handler):
     yield BeerpongoApiGatewayWebsocketStack(
         app,
         construct_id="BeerpongoWebsocketStack",
         config=mock_config,
         route_lambdas=route_lambdas,
+        auth_handler=auth_handler,
+        connect_handler=connect_handler
     )
 
 

@@ -17,6 +17,12 @@ class BeerpongoLambdaStack(Stack):
         lambda_config = config.get("lambda")
 
         # Create Websocket lambdas
+        authenticate_websocket_config = lambda_config.get("lambdas").get(
+            "lambda_authenticate_websocket"
+        )
+        connect_websocket_config = lambda_config.get("lambdas").get(
+            "lambda_on_connect"
+        )
         create_game_config = lambda_config.get("lambdas").get(
             "lambda_on_create_game"
         )
@@ -25,6 +31,26 @@ class BeerpongoLambdaStack(Stack):
         )
         update_game_config = lambda_config.get("lambdas").get(
             "lambda_on_update_game"
+        )
+
+        self.lambda_authenticate_websocket = lambda_.Function(
+            self,
+            id=authenticate_websocket_config["name"],
+            runtime=lambda_.Runtime(authenticate_websocket_config["runtime"]),
+            handler=authenticate_websocket_config["handler"],
+            code=lambda_.Code.from_asset(
+                authenticate_websocket_config["code"]
+            ),
+        )
+
+        self.lambda_connect_websocket = lambda_.Function(
+            self,
+            id=connect_websocket_config["name"],
+            runtime=lambda_.Runtime(connect_websocket_config["runtime"]),
+            handler=connect_websocket_config["handler"],
+            code=lambda_.Code.from_asset(
+                connect_websocket_config["code"]
+            ),
         )
 
         self.lambda_on_create_game = lambda_.Function(
@@ -77,6 +103,18 @@ class BeerpongoLambdaStack(Stack):
                 ],
                 resources=["*"],
             )
+        )
+
+        self.lambda_authenticate_websocket.add_permission(
+            principal=ServicePrincipal('apigateway.amazonaws.com'),
+            action='lambda:InvokeFunction',
+            id="apigateway-ws-authenticate-permission",
+        )
+
+        self.lambda_connect_websocket.add_permission(
+            principal=ServicePrincipal('apigateway.amazonaws.com'),
+            action='lambda:InvokeFunction',
+            id="apigateway-ws-connect-permission",
         )
 
         self.lambda_on_create_game.add_permission(

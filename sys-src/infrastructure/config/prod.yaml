@@ -24,10 +24,21 @@ lambda:
       handler: "lambda_on_update_game.on_update_game"
       runtime: "python3.9"
 
+cognito:
+  stackName: 'BeerpongoCognitoStackProd'
+  userPool:
+    id: 'BeerpongoProdUserPool'
+    name: 'BeerpongoProdUserPool'
+  userPoolClient:
+    id: 'BeerpongoProdUserPoolClient'
+    name: 'BeerpongoProdUserPoolClient'
+
 apiGatewayWebsocket:
   stackName: 'BeerpongoAPIGatewayWebsocketStackProd'
   id: 'BeerpongoProdWebsocketApi'
   name: 'BeerpongoProdWebsocketApi'
+  authorizerId: 'CognitoUserProdAuthorizerId'
+  authorizerName: 'CognitoUserProdAuthorizer'
   stage:
     id: 'BeerpongoWebsocketStageProd'
     name: 'Prod'

@@ -23,6 +23,18 @@ def mock_config():
         "lambda": {
             "stackName": "LambdaStackDev",
             "lambdas": {
+                "lambda_authenticate_websocket": {
+                    "name": "lambdaDev_authenticate_websocket",
+                    "code": "./../backend/websocket_lambdas",
+                    "handler": "lambda_authenticate_websocket.on_connect",
+                    "runtime": 'python3.9',
+                },
+                "lambda_on_connect": {
+                    "name": "lambdaDev_connect_websocket",
+                    "code": "./../backend/websocket_lambdas",
+                    "handler": "lambda_on_connect.on_connect",
+                    "runtime": 'python3.9',
+                },
                 "lambda_on_create_game": {
                     "name": "lambdaDev_createGame",
                     "code": "./../backend/websocket_lambdas",

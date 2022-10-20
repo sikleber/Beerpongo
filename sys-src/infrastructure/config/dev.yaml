@@ -8,6 +8,16 @@ dynamoDB:
 lambda:
   stackName: 'BeerpongoLambdaStackDev'
   lambdas:
+    lambda_authenticate_websocket:
+      name: "lambdaDev_authenticate_websocket"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_authenticate_websocket.on_connect"
+      runtime: 'python3.9'
+    lambda_on_connect:
+      name: "lambdaDev_connect_websocket"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_on_connect.on_connect"
+      runtime: "python3.9"
     lambda_on_create_game:
       name: "lambdaDev_createGame"
       code: "./../backend/websocket_lambdas"
@@ -24,10 +34,21 @@ lambda:
       handler: "lambda_on_update_game.on_update_game"
       runtime: "python3.9"
 
+cognito:
+  stackName: 'BeerpongoCognitoStackDev'
+  userPool:
+    id: 'BeerpongoDevUserPool'
+    name: 'BeerpongoDevUserPool'
+  userPoolClient:
+    id: 'BeerpongoDevUserPoolClient'
+    name: 'BeerpongoDevUserPoolClient'
+
 apiGatewayWebsocket:
   stackName: 'BeerpongoAPIGatewayWebsocketStackDev'
   id: 'BeerpongoDevWebsocketApi'
   name: 'BeerpongoDevWebsocketApi'
+  authorizerId: 'CognitoUserDevAuthorizer'
+  connectRouteIntegrationId: 'ConnectWebsocketIntegrationDev'
   stage:
     id: 'BeerpongoWebsocketStageDev'
     name: 'dev'
@@ -43,13 +64,4 @@ apiGatewayWebsocket:
     id: 'UpdateGameIntegrationDev'
     responseId: 'UpdateGameIntegrationDev'
     key: 'UpdateGame'
-
-cognito:
-  stackName: 'BeerpongoCognitoStackDev'
-  userPool:
-    id: 'BeerpongoDevUserPool'
-    name: 'BeerpongoDevUserPool'
-  userPoolClient:
-    id: 'BeerpongoDevUserPoolClient'
-    name: 'BeerpongoDevUserPoolClient'
 

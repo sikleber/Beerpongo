@@ -46,6 +46,9 @@ config = get_config()
 # Create DynamoDB stack
 BeerpongoDynamoDbStack(app, config["dynamoDB"]["stackName"], config)
 
+# Create Cognito stack
+CognitoStack = BeerpongoCognitoStack(app, config["cognito"]["stackName"], config)
+
 # Create Lambda stack
 LambdaStack = BeerpongoLambdaStack(app, config["lambda"]["stackName"], config)
 
@@ -59,9 +62,8 @@ BeerpongoApiGatewayWebsocketStack(
         "joinGameRoute": LambdaStack.lambda_on_join_game,
         "updateGameRoute": LambdaStack.lambda_on_update_game,
     },
+    auth_handler=LambdaStack.lambda_authenticate_websocket,
+    connect_handler=LambdaStack.lambda_connect_websocket
 )
-
-# Create Cognito stack
-BeerpongoCognitoStack(app, config["cognito"]["stackName"], config)
 
 app.synth()

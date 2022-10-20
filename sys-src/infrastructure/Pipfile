@@ -8,6 +8,7 @@ aws-cdk-lib = "==2.24.1"
 constructs = "<11.0.0,>=10.0.0"
 pyyaml = "*"
 "aws-cdk.aws-apigatewayv2-integrations-alpha" = "*"
+"aws-cdk.aws-apigatewayv2-authorizers-alpha" = "*"
 
 [dev-packages]
 flake8 = "*"
