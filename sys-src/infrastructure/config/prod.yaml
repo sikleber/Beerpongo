@@ -8,6 +8,19 @@ dynamoDB:
 lambda:
   stackName: 'BeerpongoLambdaStackProd'
   lambdas:
+    lambda_authenticate_websocket:
+      name: "lambdaProd_authenticate_websocket"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_authenticate_websocket.on_connect"
+      runtime: 'python3.9'
+      jwt_layer:
+        id: "py39_jwt_authentication_layer"
+        code: "./../backend/lambda_layers/pyjwtcrypto_39.zip"
+    lambda_on_connect:
+      name: "lambdaProd_connect_websocket"
+      code: "./../backend/websocket_lambdas"
+      handler: "lambda_on_connect.on_connect"
+      runtime: "python3.9"
     lambda_on_create_game:
       name: "lambdaProd_createGame"
       code: "./../backend/websocket_lambdas/on_create_game"
@@ -38,7 +51,7 @@ apiGatewayWebsocket:
   id: 'BeerpongoProdWebsocketApi'
   name: 'BeerpongoProdWebsocketApi'
   authorizerId: 'CognitoUserProdAuthorizerId'
-  authorizerName: 'CognitoUserProdAuthorizer'
+  connectRouteIntegrationId: 'ConnectWebsocketIntegrationProd'
   stage:
     id: 'BeerpongoWebsocketStageProd'
     name: 'Prod'

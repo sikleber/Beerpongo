@@ -50,7 +50,13 @@ BeerpongoDynamoDbStack(app, config["dynamoDB"]["stackName"], config)
 CognitoStack = BeerpongoCognitoStack(app, config["cognito"]["stackName"], config)
 
 # Create Lambda stack
-LambdaStack = BeerpongoLambdaStack(app, config["lambda"]["stackName"], config)
+LambdaStack = BeerpongoLambdaStack(
+    app,
+    config["lambda"]["stackName"],
+    config,
+    cognito_user_pool_id=CognitoStack.user_pool.user_pool_id,
+    cognito_user_pool_client_id=CognitoStack.user_pool_client.user_pool_client_id
+)
 
 # Create API-Gateway websocket stack
 BeerpongoApiGatewayWebsocketStack(

@@ -13,6 +13,9 @@ lambda:
       code: "./../backend/websocket_lambdas"
       handler: "lambda_authenticate_websocket.on_connect"
       runtime: 'python3.9'
+      jwt_layer:
+        id: "py39_jwt_authentication_layer"
+        code: "./../backend/lambda_layers/pyjwtcrypto_39.zip"
     lambda_on_connect:
       name: "lambdaDev_connect_websocket"
       code: "./../backend/websocket_lambdas"
@@ -64,4 +67,3 @@ apiGatewayWebsocket:
     id: 'UpdateGameIntegrationDev'
     responseId: 'UpdateGameIntegrationDev'
     key: 'UpdateGame'
-

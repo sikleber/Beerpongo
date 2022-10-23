@@ -6,12 +6,17 @@ from constructs import Construct
 
 class BeerpongoLambdaStack(Stack):
     def __init__(
-        self, scope: Construct, construct_id: str, config: dict, **kwargs
+            self,
+            scope: Construct,
+            construct_id: str,
+            config: dict,
+            cognito_user_pool_id: str,
+            cognito_user_pool_client_id: str,
+            **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Read the config
-
         dynamodb_config = config.get("dynamoDB")
         games_table_config = dynamodb_config.get("gamesTable")
         lambda_config = config.get("lambda")
@@ -33,6 +38,13 @@ class BeerpongoLambdaStack(Stack):
             "lambda_on_update_game"
         )
 
+        self.jwt_lambda_layer = lambda_.LayerVersion(
+            self,
+            authenticate_websocket_config["jwt_layer"]["id"],
+            code=lambda_.Code.from_asset(authenticate_websocket_config["jwt_layer"]["code"]),
+            compatible_runtimes=[lambda_.Runtime(authenticate_websocket_config["runtime"])]
+        )
+
         self.lambda_authenticate_websocket = lambda_.Function(
             self,
             id=authenticate_websocket_config["name"],
@@ -41,6 +53,11 @@ class BeerpongoLambdaStack(Stack):
             code=lambda_.Code.from_asset(
                 authenticate_websocket_config["code"]
             ),
+            environment={
+                "USER_POOL_ID": cognito_user_pool_id,
+                "APP_CLIENT_ID": cognito_user_pool_client_id
+            },
+            layers=[self.jwt_lambda_layer]
         )
 
         self.lambda_connect_websocket = lambda_.Function(
