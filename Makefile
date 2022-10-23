@@ -38,7 +38,7 @@ format-infrastructure: .install-dev-infrastructure
 	cd sys-src/infrastructure && pipenv run black . && pipenv run isort .
 
 deploy-infrastructure: install-infrastructure test-infrastructure
-	cd sys-src/infrastructure && cdk deploy -c config=$(CONFIG) --profile $(PROFILE) $(STACK)
+	cd sys-src/infrastructure && cdk deploy -c config=$(CONFIG) --profile $(PROFILE) $(STACK) --require-approval never
 
 destroy-infrastructure: install-infrastructure
 	cd sys-src/infrastructure && cdk destroy -c config=$(CONFIG) --require-approval never --profile $(PROFILE) $(STACK)

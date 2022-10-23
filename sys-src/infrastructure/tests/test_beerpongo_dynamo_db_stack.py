@@ -1,8 +1,7 @@
 import pytest
 from aws_cdk import App
 from aws_cdk.assertions import Template
-
-from cdk.stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
+from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
 
 
 @pytest.fixture

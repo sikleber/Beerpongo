@@ -6,6 +6,7 @@ import yaml
 from stacks.beerpongo_api_gateway_websocket_stack import (
     BeerpongoApiGatewayWebsocketStack,
 )
+from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
 from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 
@@ -42,11 +43,20 @@ def get_config():
 app = cdk.App()
 config = get_config()
 
-# Create dynamoDB stack
+# Create DynamoDB stack
 BeerpongoDynamoDbStack(app, config["dynamoDB"]["stackName"], config)
 
+# Create Cognito stack
+CognitoStack = BeerpongoCognitoStack(app, config["cognito"]["stackName"], config)
+
 # Create Lambda stack
-LambdaStack = BeerpongoLambdaStack(app, config["Lambda"]["stackName"], config)
+LambdaStack = BeerpongoLambdaStack(
+    app,
+    config["lambda"]["stackName"],
+    config,
+    cognito_user_pool_id=CognitoStack.user_pool.user_pool_id,
+    cognito_user_pool_client_id=CognitoStack.user_pool_client.user_pool_client_id
+)
 
 # Create API-Gateway websocket stack
 BeerpongoApiGatewayWebsocketStack(
@@ -58,6 +68,8 @@ BeerpongoApiGatewayWebsocketStack(
         "joinGameRoute": LambdaStack.lambda_on_join_game,
         "updateGameRoute": LambdaStack.lambda_on_update_game,
     },
+    auth_handler=LambdaStack.lambda_authenticate_websocket,
+    connect_handler=LambdaStack.lambda_connect_websocket
 )
 
 app.synth()
