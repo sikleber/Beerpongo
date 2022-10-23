@@ -2,6 +2,7 @@ import pytest
 from aws_cdk import App
 from aws_cdk.assertions import Template
 from aws_cdk.aws_s3_assets import Asset
+
 from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 
 
@@ -28,6 +29,10 @@ def mock_config():
                     "code": "./../backend/websocket_lambdas",
                     "handler": "lambda_authenticate_websocket.on_connect",
                     "runtime": 'python3.9',
+                    "jwt_layer": {
+                        "id": "py39_jwt_authentication_layer",
+                        "code": "./../backend/lambda_layers/pyjwtcrypto_39.zip"
+                    }
                 },
                 "lambda_on_connect": {
                     "name": "lambdaDev_connect_websocket",
@@ -61,7 +66,11 @@ def mock_config():
 @pytest.fixture
 def lambda_stack(app, mock_config):
     yield BeerpongoLambdaStack(
-        app, construct_id="BeerpongoLambdaStack", config=mock_config
+        app,
+        construct_id="BeerpongoLambdaStack",
+        config=mock_config,
+        cognito_user_pool_id="TEST_POOL_ID",
+        cognito_user_pool_client_id="TEST_CLIENT_ID"
     )
 
 
@@ -70,8 +79,7 @@ def template(lambda_stack):
     yield Template.from_stack(lambda_stack)
 
 
-def test_lambda_stack(app, lambda_stack, template: Template):
-    # Get the Bucket-names of the lambda-folders
+def test_create_lambda(app, lambda_stack, template: Template):
     asset_lambda_on_create_game = Asset(
         lambda_stack,
         "lambda_on_create_game",
@@ -80,25 +88,6 @@ def test_lambda_stack(app, lambda_stack, template: Template):
     lambda_on_create_game_name = lambda_stack.resolve(
         asset_lambda_on_create_game.s3_bucket_name
     )
-
-    asset_lambda_on_join_game = Asset(
-        lambda_stack,
-        "lambda_on_join_game",
-        path="./../backend/websocket_lambdas/",
-    )
-    lambda_on_join_game_name = lambda_stack.resolve(
-        asset_lambda_on_join_game.s3_bucket_name
-    )
-
-    asset_lambda_on_update_game = Asset(
-        lambda_stack,
-        "lambda_on_update_game",
-        path="./../backend/websocket_lambdas/",
-    )
-    lambda_on_update_game_name = lambda_stack.resolve(
-        asset_lambda_on_update_game.s3_bucket_name
-    )
-
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
@@ -109,6 +98,17 @@ def test_lambda_stack(app, lambda_stack, template: Template):
                 "S3Key": asset_lambda_on_create_game.s3_object_key,
             },
         },
+    )
+
+
+def test_join_lambda(app, lambda_stack, template: Template):
+    asset_lambda_on_join_game = Asset(
+        lambda_stack,
+        "lambda_on_join_game",
+        path="./../backend/websocket_lambdas/",
+    )
+    lambda_on_join_game_name = lambda_stack.resolve(
+        asset_lambda_on_join_game.s3_bucket_name
     )
     template.has_resource_properties(
         "AWS::Lambda::Function",
@@ -121,6 +121,17 @@ def test_lambda_stack(app, lambda_stack, template: Template):
             },
         },
     )
+
+
+def test_update_lambda(app, lambda_stack, template: Template):
+    asset_lambda_on_update_game = Asset(
+        lambda_stack,
+        "lambda_on_update_game",
+        path="./../backend/websocket_lambdas/",
+    )
+    lambda_on_update_game_name = lambda_stack.resolve(
+        asset_lambda_on_update_game.s3_bucket_name
+    )
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
@@ -129,6 +140,50 @@ def test_lambda_stack(app, lambda_stack, template: Template):
             "Code": {
                 "S3Bucket": lambda_on_update_game_name,
                 "S3Key": asset_lambda_on_update_game.s3_object_key,
+            },
+        },
+    )
+
+
+def test_connect_lambda(app, lambda_stack, template: Template):
+    asset_lambda_on_connect = Asset(
+        lambda_stack,
+        "lambda_on_connect",
+        path="./../backend/websocket_lambdas/",
+    )
+    lambda_on_connect = lambda_stack.resolve(
+        asset_lambda_on_connect.s3_bucket_name
+    )
+    template.has_resource_properties(
+        "AWS::Lambda::Function",
+        {
+            "Handler": "lambda_on_connect.on_connect",
+            "Runtime": "python3.9",
+            "Code": {
+                "S3Bucket": lambda_on_connect,
+                "S3Key": asset_lambda_on_connect.s3_object_key,
+            },
+        },
+    )
+
+
+def test_authenticate_lambda(app, lambda_stack, template: Template):
+    asset_lambda_authenticate = Asset(
+        lambda_stack,
+        "lambda_authenticate_websocket",
+        path="./../backend/websocket_lambdas/",
+    )
+    lambda_authenticate = lambda_stack.resolve(
+        asset_lambda_authenticate.s3_bucket_name
+    )
+    template.has_resource_properties(
+        "AWS::Lambda::Function",
+        {
+            "Handler": "lambda_authenticate_websocket.on_connect",
+            "Runtime": "python3.9",
+            "Code": {
+                "S3Bucket": lambda_authenticate,
+                "S3Key": asset_lambda_authenticate.s3_object_key,
             },
         },
     )

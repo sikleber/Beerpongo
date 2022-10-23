@@ -1,8 +1,8 @@
 import os
-
 import pytest
 from aws_cdk import App
 from aws_cdk.assertions import Match, Template
+
 from stacks.beerpongo_api_gateway_websocket_stack import (
     BeerpongoApiGatewayWebsocketStack,
 )
@@ -32,6 +32,10 @@ def mock_config():
                     "code": "./../backend/websocket_lambdas",
                     "handler": "lambda_authenticate_websocket.on_connect",
                     "runtime": 'python3.9',
+                    "jwt_layer": {
+                        "id": "py39_jwt_authentication_layer",
+                        "code": "./../backend/lambda_layers/pyjwtcrypto_39.zip"
+                    }
                 },
                 "lambda_on_connect": {
                     "name": "lambdaDev_connect_websocket",
@@ -106,7 +110,11 @@ def app():
 @pytest.fixture
 def lambda_stack(app, mock_config):
     yield BeerpongoLambdaStack(
-        app, construct_id="BeerpongoLambdaStack", config=mock_config
+        app,
+        construct_id="BeerpongoLambdaStack",
+        config=mock_config,
+        cognito_user_pool_id="TEST_POOL_ID",
+        cognito_user_pool_client_id="TEST_CLIENT_ID"
     )
 
 
@@ -215,6 +223,26 @@ def test_beerpongo_api_gateway_websocket_update_game_route(template: Template):
             "ApiId": {"Ref": Match.any_value()},
             "RouteKey": "UpdateGame",
             "AuthorizationType": "NONE",
+            "Target": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "integrations/",
+                        {"Ref": Match.any_value()},
+                    ],
+                ]
+            },
+        },
+    )
+
+
+def test_beerpongo_api_gateway_websocket_connect_route(template: Template):
+    template.has_resource_properties(
+        "AWS::ApiGatewayV2::Route",
+        {
+            "ApiId": {"Ref": Match.any_value()},
+            "RouteKey": "$connect",
+            "AuthorizationType": "CUSTOM",
             "Target": {
                 "Fn::Join": [
                     "",
