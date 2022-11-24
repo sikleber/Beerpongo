@@ -9,6 +9,7 @@ constructs = "<11.0.0,>=10.0.0"
 pyyaml = "*"
 "aws-cdk.aws-apigatewayv2-integrations-alpha" = "*"
 "aws-cdk.aws-apigatewayv2-authorizers-alpha" = "*"
+typing-extensions = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -17,6 +18,8 @@ isort = "*"
 pytest = "*"
 pytest-cov = "*"
 moto = "*"
+mypy = "*"
+types-pyyaml = "*"
 
 [requires]
 python_version = "3.10"

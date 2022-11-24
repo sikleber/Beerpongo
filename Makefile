@@ -7,7 +7,7 @@ prepare:
 
 install: install-infrastructure install-backend install-frontend
 
-test: test-infrastructure test-backend test-frontend
+test: test-infrastructure test-backend # test-frontend
 
 test-coverage: test-coverage-infrastructure test-coverage-backend test-coverage-frontend
 
@@ -37,7 +37,7 @@ formatting-checks-infrastructure: .install-dev-infrastructure
 format-infrastructure: .install-dev-infrastructure
 	cd sys-src/infrastructure && pipenv run black . && pipenv run isort .
 
-deploy-infrastructure: install-infrastructure test-infrastructure
+deploy-infrastructure: install-infrastructure create-python-layer-zip test-infrastructure
 	cd sys-src/infrastructure && cdk deploy -c config=$(CONFIG) --profile $(PROFILE) $(STACK) --require-approval never
 
 destroy-infrastructure: install-infrastructure
@@ -53,7 +53,7 @@ install-backend:
 	cd sys-src/backend && pipenv sync
 
 test-backend: .install-dev-backend
-	cd sys-src/backend && pipenv run pytest
+	cd sys-src/backend && pipenv run mypy websocket_lambdas && pipenv run pytest
 
 test-coverage-backend: .install-dev-backend
 	cd sys-src/backend && pipenv run pytest --cov
@@ -87,3 +87,9 @@ build-docker-frontend:
 start-docker-frontend: build-docker-frontend
 	cd sys-src/frontend/beerpongo-react && docker run -d -p 80:80 beerpongo-webapp:latest
 
+
+################ OTHER ################
+create-python-layer-zip: install-backend
+	cd sys-src/backend && pipenv lock -r > requirements.txt && \
+	pip install -r requirements.txt --upgrade --no-deps -t ./requirements/python && \
+	pipenv run python scripts/zip_backend_layer.py
