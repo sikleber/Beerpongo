@@ -1,12 +1,16 @@
 # dev configuration
-dynamoDB:
+dynamodbStack:
   stackName: 'BeerpongoDynamoDbStackDev'
   gamesTable:
     id: 'BeerpongoDevGamesTable'
     tableName: 'BeerpongoDevGamesTable'
 
-lambda:
+lambdaStack:
   stackName: 'BeerpongoLambdaStackDev'
+  layer:
+    id: "backend_lambda_layer"
+    code: "./../backend/lambda_layers/backend_lambda_layer.zip"
+    runtime: 'python3.9'
   lambdas:
     lambda_authenticate_websocket:
       name: "lambdaDev_authenticate_websocket"
@@ -37,7 +41,7 @@ lambda:
       handler: "lambda_on_update_game.on_update_game"
       runtime: "python3.9"
 
-cognito:
+cognitoStack:
   stackName: 'BeerpongoCognitoStackDev'
   userPool:
     id: 'BeerpongoDevUserPool'
@@ -46,7 +50,7 @@ cognito:
     id: 'BeerpongoDevUserPoolClient'
     name: 'BeerpongoDevUserPoolClient'
 
-apiGatewayWebsocket:
+apiGatewayWebsocketStack:
   stackName: 'BeerpongoAPIGatewayWebsocketStackDev'
   id: 'BeerpongoDevWebsocketApi'
   name: 'BeerpongoDevWebsocketApi'
@@ -55,15 +59,16 @@ apiGatewayWebsocket:
   stage:
     id: 'BeerpongoWebsocketStageDev'
     name: 'dev'
-  createGameRoute:
-    id: 'CreateGameIntegrationDev'
-    responseId: 'CreateGameIntegrationDev'
-    key: 'CreateGame'
-  joinGameRoute:
-    id: 'JoinGameIntegrationDev'
-    responseId: 'JoinGameIntegrationDev'
-    key: 'JoinGame'
-  updateGameRoute:
-    id: 'UpdateGameIntegrationDev'
-    responseId: 'UpdateGameIntegrationDev'
-    key: 'UpdateGame'
+  routes:
+    createGameRoute:
+      id: 'CreateGameIntegrationDev'
+      responseId: 'CreateGameIntegrationDev'
+      key: 'CreateGame'
+    joinGameRoute:
+      id: 'JoinGameIntegrationDev'
+      responseId: 'JoinGameIntegrationDev'
+      key: 'JoinGame'
+    updateGameRoute:
+      id: 'UpdateGameIntegrationDev'
+      responseId: 'UpdateGameIntegrationDev'
+      key: 'UpdateGame'

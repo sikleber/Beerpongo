@@ -1,9 +1,10 @@
 import json
+import os
 from unittest.mock import ANY
 
 from moto import mock_dynamodb
 
-from tests.resources import *
+from tests.resources import create_games_table
 from websocket_lambdas.lambda_on_create_game import on_create_game
 
 

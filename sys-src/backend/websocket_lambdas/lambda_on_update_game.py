@@ -1,11 +1,24 @@
 import json
 import logging
 import os
+from typing import TypedDict
 
 import boto3
 
+from websocket_lambdas.custom_types import GameEntity, WebsocketResponse
 
-def on_update_game(event, context):
+
+class UpdateGameBody(TypedDict, total=False):
+    GameId: str
+    State: str
+
+
+class UpdateGameResponseBody(TypedDict):
+    GameId: str
+    State: str
+
+
+def on_update_game(event: dict, context: dict) -> WebsocketResponse:
     """
     Update the game state by a given string and callback all game
     connections specified by the list of connection ids in the game item.
@@ -17,16 +30,16 @@ def on_update_game(event, context):
             404 Game not found
             500 Error changing the Game item
     """
-    body = json.loads(event["body"])
-    current_connection_id = event["requestContext"]["connectionId"]
+    body: UpdateGameBody = json.loads(event["body"])
+    current_connection_id: str = event["requestContext"]["connectionId"]
     table_name = os.environ["DB_TABLE"]
     table = boto3.resource("dynamodb").Table(table_name)
 
     try:
         if "GameId" not in body:
-            raise "No game id specified in body={0}".format(body)
+            raise Exception("No game id specified in body={0}".format(body))
         elif "State" not in body:
-            raise "No state specified in body={0}".format(body)
+            raise Exception("No state specified in body={0}".format(body))
 
         game_id = body["GameId"]
         state = body["State"]
@@ -34,13 +47,13 @@ def on_update_game(event, context):
         # Get the item that will be changed
         data = table.get_item(Key={"GameId": game_id})
         if "Item" not in data:
-            raise "No item found for GameId={0}".format(game_id)
+            raise Exception("No item found for GameId={0}".format(game_id))
     except Exception:
-        return {"statusCode": 404}
+        return WebsocketResponse(statusCode=404)
 
     try:
         # update state string
-        item = data["Item"]
+        item: GameEntity = data["Item"]
         if len(item["State"]) == 0:
             item["State"] += state
         else:
@@ -50,9 +63,12 @@ def on_update_game(event, context):
         table.put_item(Item=item)
     except Exception:
         logging.exception("Failed to update game item")
-        return {"statusCode": 500}
+        return WebsocketResponse(statusCode=500)
 
-    response_data = json.dumps({"GameId": game_id, "State": item["State"]})
+    response_body: UpdateGameResponseBody = UpdateGameResponseBody(
+        GameId=game_id, State=item["State"]
+    )
+    response_data = json.dumps(response_body)
 
     # callback game connections
     try:
@@ -78,4 +94,4 @@ def on_update_game(event, context):
     except Exception:
         logging.exception("Failed to callback game connections")
 
-    return {"statusCode": 200, "body": response_data}
+    return WebsocketResponse(statusCode=200, body=response_data)

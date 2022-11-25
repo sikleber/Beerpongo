@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 boto3 = "*"
 moto = "*"
-pyjwt = "*"
+typing-extensions = "*"
 
 [dev-packages]
 moto = "*"
@@ -15,6 +15,8 @@ black = "*"
 isort = "*"
 pytest = "*"
 pytest-cov = "*"
+mypy = "*"
+pytest-shutil = "*"
 
 [requires]
 python_version = "3.9"
