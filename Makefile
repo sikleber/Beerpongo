@@ -32,16 +32,16 @@ test-coverage-infrastructure: .install-dev-infrastructure
 	cd sys-src/infrastructure && pipenv run pytest --cov
 
 formatting-checks-infrastructure: .install-dev-infrastructure
-	cd sys-src/infrastructure && pipenv run flake8 . && pipenv run black . --check && pipenv run isort . --check
+	cd sys-src/infrastructure && pipenv run pflake8 . && pipenv run black . --check && pipenv run isort . --check
 
 format-infrastructure: .install-dev-infrastructure
 	cd sys-src/infrastructure && pipenv run black . && pipenv run isort .
 
 deploy-infrastructure: install-infrastructure create-python-layer-zip test-infrastructure
-	cd sys-src/infrastructure && cdk deploy -c config=$(CONFIG) --profile $(PROFILE) $(STACK) --require-approval never
+	cd sys-src/infrastructure && pipenv run cdk deploy -c config=$(CONFIG) --profile $(PROFILE) $(STACK) --require-approval never
 
 destroy-infrastructure: install-infrastructure
-	cd sys-src/infrastructure && cdk destroy -c config=$(CONFIG) --require-approval never --profile $(PROFILE) $(STACK)
+	cd sys-src/infrastructure && pipenv run cdk destroy -c config=$(CONFIG) --require-approval never --profile $(PROFILE) $(STACK)
 
 .install-dev-infrastructure:
 	cd sys-src/infrastructure && pipenv sync --dev
@@ -53,7 +53,7 @@ install-backend:
 	cd sys-src/backend && pipenv sync
 
 test-backend: .install-dev-backend
-	cd sys-src/backend && pipenv run mypy websocket_lambdas && pipenv run pytest
+	cd sys-src/backend && pipenv run mypy src && pipenv run pytest
 
 test-coverage-backend: .install-dev-backend
 	cd sys-src/backend && pipenv run pytest --cov
@@ -62,7 +62,7 @@ test-coverage-backend: .install-dev-backend
 	cd sys-src/backend && pipenv sync --dev
 
 formatting-checks-backend: .install-dev-backend
-	cd sys-src/backend && pipenv run flake8 . && pipenv run black . --check && pipenv run isort . --check
+	cd sys-src/backend && pipenv run pflake8 . && pipenv run black . --check && pipenv run isort . --check
 
 format-backend: .install-dev-backend
 	cd sys-src/backend && pipenv run black . && pipenv run isort .
@@ -90,6 +90,6 @@ start-docker-frontend: build-docker-frontend
 
 ################ OTHER ################
 create-python-layer-zip: install-backend
-	cd sys-src/backend && pipenv lock -r > requirements.txt && \
+	cd sys-src/backend && pipenv requirements > requirements.txt && \
 	pip install -r requirements.txt --upgrade --no-deps -t ./requirements/python && \
 	pipenv run python scripts/zip_backend_layer.py

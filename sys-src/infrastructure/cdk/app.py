@@ -36,8 +36,10 @@ def get_config(cdk_app: aws_cdk.App) -> CdkConfig | None:
             except yaml.YAMLError as e:
                 _logger.error(e)
     except Exception as e:
-        raise f"""No or no valid config variable passed!
+        raise Exception(
+            f"""No or no valid config variable passed!
              '-c config={env}'\n {e}"""
+        )
 
     return c
 
@@ -59,13 +61,14 @@ else:
     )
 
     # Create Lambda stack
+    user_pool_client_id = CognitoStack.user_pool_client.user_pool_client_id
     LambdaStack = BeerpongoLambdaStack(
         app,
         config["lambdaStack"]["stackName"],
         lambda_config=config["lambdaStack"],
         dynamodb_config=config["dynamodbStack"],
         cognito_user_pool_id=CognitoStack.user_pool.user_pool_id,
-        cognito_user_pool_client_id=CognitoStack.user_pool_client.user_pool_client_id,
+        cognito_user_pool_client_id=user_pool_client_id,
     )
 
     # Create API-Gateway websocket stack

@@ -14,31 +14,31 @@ lambdaStack:
   lambdas:
     lambda_authenticate_websocket:
       name: "lambdaDev_authenticate_websocket"
-      code: "./../backend/websocket_lambdas"
-      handler: "lambda_authenticate_websocket.on_connect"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_authenticate"
       runtime: 'python3.9'
       jwt_layer:
         id: "py39_jwt_authentication_layer"
         code: "./../backend/lambda_layers/pyjwtcrypto_39.zip"
     lambda_on_connect:
       name: "lambdaDev_connect_websocket"
-      code: "./../backend/websocket_lambdas"
-      handler: "lambda_on_connect.on_connect"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_connect"
       runtime: "python3.9"
     lambda_on_create_game:
       name: "lambdaDev_createGame"
-      code: "./../backend/websocket_lambdas"
-      handler: "lambda_on_create_game.on_create_game"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_create_game"
       runtime: "python3.9"
     lambda_on_join_game:
       name: "lambdaDev_joinGame"
-      code: "./../backend/websocket_lambdas"
-      handler: "lambda_on_join_game.on_join_game"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_join_game"
       runtime: "python3.9"
     lambda_on_update_game:
       name: "lambdaDev_updateGame"
-      code: "./../backend/websocket_lambdas"
-      handler: "lambda_on_update_game.on_update_game"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_update_game"
       runtime: "python3.9"
 
 cognitoStack:
