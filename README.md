@@ -75,10 +75,6 @@ Deploy infrastructure stacks to AWS:
 ```
 make deploy-infrastructure PROFILE=<deployment-profile> STACK=<stack_id> CONFIG=<env>
 ```
-Build frontend docker container:
-```
-make build-docker-frontend
-```
 
 
 

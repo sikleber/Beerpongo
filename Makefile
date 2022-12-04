@@ -7,7 +7,7 @@ prepare:
 
 install: install-infrastructure install-backend install-frontend
 
-test: test-infrastructure test-backend # test-frontend
+test: test-infrastructure test-backend test-frontend
 
 test-coverage: test-coverage-infrastructure test-coverage-backend test-coverage-frontend
 
@@ -15,9 +15,7 @@ formatting-checks: formatting-checks-infrastructure formatting-checks-backend
 
 format: format-infrastructure format-backend
 
-deploy: deploy-infrastructure build-docker-frontend
-
-start: start-docker-frontend
+deploy: deploy-infrastructure
 
 
 ################ INFRASTRUCTURE ################
@@ -69,23 +67,15 @@ format-backend: .install-dev-backend
 
 
 ################ FRONTEND ################
+# Todo flutter integration
 install-frontend:
-	cd sys-src/frontend/beerpongo-react && npm install
+	cd sys-src/frontend
 
 test-frontend: install-frontend
-	cd sys-src/frontend/beerpongo-react && npm run test -- --watchAll=false
+	cd sys-src/frontend
 
 test-coverage-frontend: install-frontend
-	cd sys-src/frontend/beerpongo-react && npm run test -- --coverage --watchAll=false
-
-start-frontend: install-frontend
-	cd sys-src/frontend/beerpongo-react && npm run start
-
-build-docker-frontend:
-	cd sys-src/frontend/beerpongo-react && docker build -t beerpongo-webapp:latest .
-
-start-docker-frontend: build-docker-frontend
-	cd sys-src/frontend/beerpongo-react && docker run -d -p 80:80 beerpongo-webapp:latest
+	cd sys-src/frontend
 
 
 ################ OTHER ################
