@@ -26,7 +26,8 @@ class BeerpongoCognitoStack(Stack):
             self_sign_up_enabled=True,
             user_verification=cognito.UserVerificationConfig(
                 email_subject="Verify your email for Beerpongo!!!",
-                email_body="Thanks for signing up to Beerpongo!\nYour verification link is:\n{##Verify Email##}",
+                email_body="Thanks for signing up to Beerpongo!\n"
+                "Your verification link is:\n{##Verify Email##}",
                 email_style=cognito.VerificationEmailStyle.LINK,
             ),
             email=cognito.UserPoolEmail.with_cognito(),

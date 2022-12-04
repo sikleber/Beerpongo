@@ -1,5 +1,6 @@
-from aws_cdk.aws_lambda import IFunction
 from typing import TypedDict
+
+from aws_cdk.aws_lambda import IFunction
 
 
 class NamedIdTypeDict(TypedDict):

@@ -1,7 +1,11 @@
 [tool.pytest.ini_options]
+testpaths = "./tests"
 pythonpath = [
  "./cdk/"
 ]
+
+[tool.flake8]
+exclude = "cdk.out"
 
 [tool.black]
 skip-string-normalization = true

@@ -10,6 +10,7 @@ pyyaml = "*"
 "aws-cdk.aws-apigatewayv2-integrations-alpha" = "*"
 "aws-cdk.aws-apigatewayv2-authorizers-alpha" = "*"
 typing-extensions = "*"
+awscliv2 = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -20,6 +21,7 @@ pytest-cov = "*"
 moto = "*"
 mypy = "*"
 types-pyyaml = "*"
+pyproject-flake8 = "*"
 
 [requires]
 python_version = "3.10"

@@ -1,7 +1,11 @@
 [tool.pytest.ini_options]
+testpaths = "./tests"
 pythonpath = [
- "./"
+    "./src"
 ]
+
+[tool.flake8]
+exclude = "requirements"
 
 [tool.black]
 skip-string-normalization = true
@@ -19,13 +23,14 @@ exclude = '''
   | build
   | dist
   | backend.out
+  | requirements
 )/
 '''
 
 [tool.isort]
 profile = "black"
-skip = ["backend.out", ".venv"]
-line_length=79
+skip = ["backend.out", ".venv", "requirements"]
+line_length = 79
 
 [tool.mypy]
 check_untyped_defs = true

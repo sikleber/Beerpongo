@@ -1,6 +1,21 @@
 import pytest
 from aws_cdk import App
-from custom_types import *
+from custom_types import (
+    ApiGatewayWebsocketStackConfig,
+    ApiGatewayWebsocketStackRouteConfig,
+    ApiGatewayWebsocketStackRoutesConfig,
+    AuthenticationLambdaConfig,
+    CdkConfig,
+    CognitoStackConfig,
+    DynamoDbStackConfig,
+    DynamoDbTableConfig,
+    JwtLayerConfig,
+    LambdaConfig,
+    LambdaLayerConfig,
+    LambdaStackConfig,
+    LambdaStackLambdasConfig,
+    NamedIdTypeDict,
+)
 
 
 @pytest.fixture
@@ -29,36 +44,36 @@ def mock_config() -> CdkConfig:
             lambdas=LambdaStackLambdasConfig(
                 lambda_authenticate_websocket=AuthenticationLambdaConfig(
                     name="lambdaTest_authenticate_websocket",
-                    code="./../backend/websocket_lambdas",
-                    handler="lambda_authenticate_websocket.on_connect",
+                    code="./../backend/src",
+                    handler="websocket_handler.on_authenticate",
                     runtime='python3.9',
                     jwt_layer=JwtLayerConfig(
                         id="authenticate_layer_id",
-                        code="./../backend/lambda_layers/pyjwtcrypto_39.zip"
-                    )
+                        code="./../backend/lambda_layers/pyjwtcrypto_39.zip",
+                    ),
                 ),
                 lambda_on_connect=LambdaConfig(
                     name="lambdaTest_connect_websocket",
-                    code="./../backend/websocket_lambdas",
-                    handler="lambda_on_connect.on_connect",
+                    code="./../backend/src",
+                    handler="websocket_handler.on_connect",
                     runtime='python3.9',
                 ),
                 lambda_on_create_game=LambdaConfig(
                     name="lambdaTest_createGame",
-                    code="./../backend/websocket_lambdas",
-                    handler="lambda_on_create_game.on_create_game",
+                    code="./../backend/src",
+                    handler="websocket_handler.on_create_game",
                     runtime="python3.9",
                 ),
                 lambda_on_join_game=LambdaConfig(
                     name="lambdaTest_joinGame",
-                    code="./../backend/websocket_lambdas",
-                    handler="lambda_on_join_game.on_join_game",
+                    code="./../backend/src",
+                    handler="websocket_handler.on_join_game",
                     runtime="python3.9",
                 ),
                 lambda_on_update_game=LambdaConfig(
                     name="lambdaTest_updateGame",
-                    code="./../backend/websocket_lambdas",
-                    handler="lambda_on_update_game.on_update_game",
+                    code="./../backend/src",
+                    handler="websocket_handler.on_update_game",
                     runtime="python3.9",
                 ),
             ),

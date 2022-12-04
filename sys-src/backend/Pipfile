@@ -17,6 +17,7 @@ pytest = "*"
 pytest-cov = "*"
 mypy = "*"
 pytest-shutil = "*"
+pyproject-flake8 = "*"
 
 [requires]
 python_version = "3.9"
