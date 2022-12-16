@@ -1,6 +1,5 @@
 ################ ALL ################
 prepare:
-	python -m ensurepip --upgrade
 	python -m pip install --upgrade pip
 	python -m pip install --upgrade pipenv
 
