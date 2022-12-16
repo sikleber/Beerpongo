@@ -23,5 +23,6 @@ jobs:
         cache: 'pipenv'
     - name: Prepare
       run: make prepare
+    - run: cd sys-src/backend && pipenv install PyJWT
     - name: Test
       run: make test
