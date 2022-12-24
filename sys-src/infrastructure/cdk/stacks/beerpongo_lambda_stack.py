@@ -30,26 +30,13 @@ class BeerpongoLambdaStack(Stack):
             compatible_runtimes=[lambda_.Runtime(layer_config["runtime"])],
         )
 
+        self.lambda_layers = [
+            self.dependency_lambda_layer,
+        ]
+
         authenticate_websocket_config = lambdas_config[
             "lambda_authenticate_websocket"
         ]
-
-        self.jwt_lambda_layer = lambda_.LayerVersion(
-            self,
-            authenticate_websocket_config["jwt_layer"]["id"],
-            code=lambda_.Code.from_asset(
-                authenticate_websocket_config["jwt_layer"]["code"]
-            ),
-            compatible_runtimes=[
-                lambda_.Runtime(authenticate_websocket_config["runtime"])
-            ],
-        )
-
-        self.lambda_layers = [
-            self.dependency_lambda_layer,
-            self.jwt_lambda_layer,
-        ]
-
         connect_websocket_config = lambdas_config["lambda_on_connect"]
         create_game_config = lambdas_config["lambda_on_create_game"]
         join_game_config = lambdas_config["lambda_on_join_game"]
