@@ -4,12 +4,10 @@ from custom_types import (
     ApiGatewayWebsocketStackConfig,
     ApiGatewayWebsocketStackRouteConfig,
     ApiGatewayWebsocketStackRoutesConfig,
-    AuthenticationLambdaConfig,
     CdkConfig,
     CognitoStackConfig,
     DynamoDbStackConfig,
     DynamoDbTableConfig,
-    JwtLayerConfig,
     LambdaConfig,
     LambdaLayerConfig,
     LambdaStackConfig,
@@ -42,15 +40,11 @@ def mock_config() -> CdkConfig:
                 runtime='python3.9',
             ),
             lambdas=LambdaStackLambdasConfig(
-                lambda_authenticate_websocket=AuthenticationLambdaConfig(
+                lambda_authenticate_websocket=LambdaConfig(
                     name="lambdaTest_authenticate_websocket",
                     code="./../backend/src",
                     handler="websocket_handler.on_authenticate",
                     runtime='python3.9',
-                    jwt_layer=JwtLayerConfig(
-                        id="authenticate_layer_id",
-                        code="./../backend/lambda_layers/pyjwtcrypto_39.zip",
-                    ),
                 ),
                 lambda_on_connect=LambdaConfig(
                     name="lambdaTest_connect_websocket",

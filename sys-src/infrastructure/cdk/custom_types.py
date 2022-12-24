@@ -28,15 +28,6 @@ class LambdaConfig(TypedDict):
     runtime: str
 
 
-class JwtLayerConfig(TypedDict):
-    id: str
-    code: str
-
-
-class AuthenticationLambdaConfig(LambdaConfig):
-    jwt_layer: JwtLayerConfig
-
-
 class LambdaLayerConfig(TypedDict):
     id: str
     code: str
@@ -44,7 +35,7 @@ class LambdaLayerConfig(TypedDict):
 
 
 class LambdaStackLambdasConfig(TypedDict):
-    lambda_authenticate_websocket: AuthenticationLambdaConfig
+    lambda_authenticate_websocket: LambdaConfig
     lambda_on_connect: LambdaConfig
     lambda_on_create_game: LambdaConfig
     lambda_on_join_game: LambdaConfig

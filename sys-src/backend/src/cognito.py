@@ -1,8 +1,12 @@
+from __future__ import print_function
+
+import json
 import logging
-from typing import List, Optional, TypedDict, cast
+import urllib.request
+from typing import Any, Dict, List, Optional, TypedDict
 
 import jwt
-from jwt import PyJWKClient
+from jwt.algorithms import RSAAlgorithm
 from typing_extensions import Required
 
 
@@ -20,14 +24,35 @@ class AuthenticationPolicyDocument(TypedDict):
 class AuthenticationResponse(TypedDict, total=False):
     principalId: Required[str]
     policyDocument: AuthenticationPolicyDocument
+    context: Dict
+
+
+class HttpVerb:
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    PATCH = 'PATCH'
+    HEAD = 'HEAD'
+    DELETE = 'DELETE'
+    OPTIONS = 'OPTIONS'
+    ALL = '*'
+
+
+def _find_jwk_value(keys: List[dict], kid: str) -> Any:
+    for key in keys:
+        if key['kid'] == kid:
+            return key
 
 
 def _generate_authentication_policy(
     principal_id: str,
     effect: Optional[str] = None,
     resource: Optional[str] = None,
+    context: dict = {},
 ) -> AuthenticationResponse:
-    auth_response = AuthenticationResponse(principalId=principal_id)
+    auth_response = AuthenticationResponse(
+        principalId=principal_id, context=context
+    )
 
     if effect and resource:
         statement_one = AuthenticationPolicyStatement(
@@ -42,70 +67,70 @@ def _generate_authentication_policy(
 
 
 class CognitoJwtAuthenticationService:
-    def __init__(self, region: str, user_pool_id: str, app_client_id: str):
+    _region = ''
+    _app_client_id = ''
+    _keys_url = ''
+
+    def __init__(
+        self,
+        region: str,
+        user_pool_id: str,
+        app_client_id: str,
+    ):
+        self._region = region
         self._app_client_id = app_client_id
-        url = (
+        self._keys_url = (
             f"https://cognito-idp.{region}.amazonaws.com/"
             f"{user_pool_id}/.well-known/jwks.json"
         )
 
-        try:
-            self._jwks_client = PyJWKClient(url)
-        except Exception as e:
-            logging.error(e)
-            raise Exception("Unable to download JWKS")
-
     def authenticate(
         self, token: str, method_arn: str
     ) -> AuthenticationResponse:
-        try:
-            # check token structure
-            if len(token.split(".")) != 3:
-                raise Exception("Invalid token structure")
-            # get unverified headers
-            headers = jwt.get_unverified_header(token)
-            # get signing key
-            signing_key = self._jwks_client.get_signing_key_from_jwt(token)
-            # validating exp, iat, signature, iss
-            data = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=[cast(str, headers.get("alg"))],
-                options={
-                    "verify_signature": True,
-                    "verify_exp": True,
-                    "verify_iat": True,
-                    "verify_iss": True,
-                    "verify_aud": False,
-                },
-            )
-        except jwt.InvalidTokenError as e:
-            logging.error(e)
-            return _generate_authentication_policy(
-                principal_id=self._app_client_id,
-                effect="Deny",
-                resource=method_arn,
-            )
-        except Exception as e:
-            logging.error(e)
-            raise Exception("Unauthorized")
+        with urllib.request.urlopen(self._keys_url) as url:
+            response = url.read()
+            keys: List[dict] = json.loads(response)['keys']
 
-        try:
-            # verifying audience, use data['client_id'] else data['aud']
-            if self._app_client_id != data.get("client_id"):
-                raise Exception("Token client id does not equal app client id")
-            # token_use check
-            if data.get("token_use") != "access":
-                raise Exception("Token use does not equal \"access\"")
-            # scope check
-            if "openid" not in cast(str, data.get("scope")).split(" "):
-                raise Exception("\"openid\" not found in token scope")
-        except Exception as e:
-            logging.error(e)
-            raise Exception("Unauthorized")
+            try:
+                split_jwt_token = token.split(' ')[-1]
+                header: dict = jwt.get_unverified_header(split_jwt_token)
+                kid: str = header['kid']
 
-        return _generate_authentication_policy(
-            principal_id=self._app_client_id,
-            effect="Allow",
-            resource=method_arn,
-        )
+                jwk_value = _find_jwk_value(keys, kid)
+                public_key = RSAAlgorithm.from_jwk(json.dumps(jwk_value))
+
+                decoded_jwt_token = jwt.decode(
+                    split_jwt_token,
+                    public_key,
+                    algorithms=['RS256'],
+                    audience=self._app_client_id,
+                )
+                principal_id = decoded_jwt_token['cognito:username']
+
+                # add additional key-value pairs associated
+                # with the authenticated principal
+                # these are made available by APIGW like so:
+                # $context.authorizer.<key>
+                # additional context is cached
+                context = {
+                    'username': decoded_jwt_token['cognito:username'],
+                    'email': decoded_jwt_token['email'],
+                    'email_verified': decoded_jwt_token['email_verified'],
+                }
+
+                return _generate_authentication_policy(
+                    principal_id=principal_id,
+                    effect="Allow",
+                    resource=method_arn,
+                    context=context,
+                )
+            except jwt.InvalidTokenError as e:
+                logging.error(e)
+                return _generate_authentication_policy(
+                    principal_id=self._app_client_id,
+                    effect="Deny",
+                    resource=method_arn,
+                )
+            except Exception as e:
+                logging.error(e)
+                raise Exception("Unauthorized")

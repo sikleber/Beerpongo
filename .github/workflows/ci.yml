@@ -16,16 +16,9 @@ jobs:
       with:
         python-version: '3.9'
         cache: 'pipenv'
-    - name: Setup python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        cache: 'pipenv'
     - name: Prepare
       run: make prepare
     - name: Check Formatting
       run: make formatting-checks
-    - name: Install backend PyJWT
-      run: cd sys-src/backend && pipenv install PyJWT
     - name: Test
       run: make test

@@ -39,7 +39,7 @@ def test_authenticate_lambda(app, lambda_stack, template: Template):
                 "S3Bucket": lambda_authenticate,
                 "S3Key": asset_lambda_authenticate.s3_object_key,
             },
-            "Layers": [Match.any_value(), Match.any_value()],
+            "Layers": [Match.any_value()],
         },
     )
 
@@ -62,7 +62,7 @@ def test_connect_lambda(app, lambda_stack, template: Template):
                 "S3Bucket": lambda_on_connect,
                 "S3Key": asset_lambda_on_connect.s3_object_key,
             },
-            "Layers": [Match.any_value(), Match.any_value()],
+            "Layers": [Match.any_value()],
         },
     )
 
@@ -85,7 +85,7 @@ def test_create_lambda(app, lambda_stack, template: Template):
                 "S3Bucket": lambda_on_create_game_name,
                 "S3Key": asset_lambda_on_create_game.s3_object_key,
             },
-            "Layers": [Match.any_value(), Match.any_value()],
+            "Layers": [Match.any_value()],
         },
     )
 
@@ -108,7 +108,7 @@ def test_join_lambda(app, lambda_stack, template: Template):
                 "S3Bucket": lambda_on_join_game_name,
                 "S3Key": asset_lambda_on_join_game.s3_object_key,
             },
-            "Layers": [Match.any_value(), Match.any_value()],
+            "Layers": [Match.any_value()],
         },
     )
 
@@ -131,6 +131,6 @@ def test_update_lambda(app, lambda_stack, template: Template):
                 "S3Bucket": lambda_on_update_game_name,
                 "S3Key": asset_lambda_on_update_game.s3_object_key,
             },
-            "Layers": [Match.any_value(), Match.any_value()],
+            "Layers": [Match.any_value()],
         },
     )

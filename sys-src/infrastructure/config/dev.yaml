@@ -17,9 +17,6 @@ lambdaStack:
       code: "./../backend/src"
       handler: "websocket_handler.on_authenticate"
       runtime: 'python3.9'
-      jwt_layer:
-        id: "py39_jwt_authentication_layer"
-        code: "./../backend/lambda_layers/pyjwtcrypto_39.zip"
     lambda_on_connect:
       name: "lambdaDev_connect_websocket"
       code: "./../backend/src"
