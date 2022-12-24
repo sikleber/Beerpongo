@@ -8,7 +8,6 @@ boto3 = "*"
 moto = "*"
 typing-extensions = "*"
 pyjwt = "*"
-cryptography = "*"
 
 [dev-packages]
 moto = "*"

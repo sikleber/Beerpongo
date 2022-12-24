@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import logging
-from typing import cast, Optional
+from typing import Optional, cast
 
 import aws_cdk
 import aws_cdk as cdk
