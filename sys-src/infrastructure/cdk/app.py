@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import logging
-from typing import cast
+from typing import cast, Optional
 
 import aws_cdk
 import aws_cdk as cdk
@@ -16,14 +16,14 @@ from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
 _logger = logging.getLogger("app")
 
 
-def get_config(cdk_app: aws_cdk.App) -> CdkConfig | None:
+def get_config(cdk_app: aws_cdk.App) -> Optional[CdkConfig]:
     """
     Reads the config yaml file for the given environment.
     Used to switch between dev and prod environments.
 
     :return: The CDK config
     """
-    c: CdkConfig | None = None
+    c: Optional[CdkConfig] = None
     env = None
     try:
         env = cdk_app.node.try_get_context("config")
