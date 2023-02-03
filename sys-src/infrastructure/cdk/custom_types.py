@@ -18,7 +18,7 @@ class DynamoDbTableConfig(TypedDict):
 
 
 class DynamoDbStackConfig(BaseStackConfig):
-    gamesTable: DynamoDbTableConfig
+    table: DynamoDbTableConfig
 
 
 class LambdaConfig(TypedDict):
@@ -39,6 +39,7 @@ class LambdaStackLambdasConfig(TypedDict):
     lambda_on_connect: LambdaConfig
     lambda_on_create_game: LambdaConfig
     lambda_on_join_game: LambdaConfig
+    lambda_on_join_game_as_guest: LambdaConfig
     lambda_on_update_game: LambdaConfig
 
 
@@ -61,6 +62,7 @@ class ApiGatewayWebsocketStackRouteConfig(TypedDict):
 class ApiGatewayWebsocketStackRoutesConfig(TypedDict):
     createGameRoute: ApiGatewayWebsocketStackRouteConfig
     joinGameRoute: ApiGatewayWebsocketStackRouteConfig
+    joinAsGuestGameRoute: ApiGatewayWebsocketStackRouteConfig
     updateGameRoute: ApiGatewayWebsocketStackRouteConfig
 
 
@@ -84,4 +86,5 @@ class CdkConfig(TypedDict):
 class RouteLambdas(TypedDict):
     createGameRoute: IFunction
     joinGameRoute: IFunction
+    joinAsGuestGameRoute: IFunction
     updateGameRoute: IFunction

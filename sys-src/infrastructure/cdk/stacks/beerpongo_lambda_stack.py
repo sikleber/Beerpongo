@@ -1,26 +1,24 @@
-from typing import Any
+from typing import Any, List
 
 import aws_cdk.aws_lambda as lambda_
 from aws_cdk import Stack
 from aws_cdk.aws_iam import PolicyStatement, ServicePrincipal
 from constructs import Construct
-from custom_types import DynamoDbStackConfig, LambdaStackConfig
+from custom_types import LambdaStackConfig
 
 
 class BeerpongoLambdaStack(Stack):
+    lambdas: List[lambda_.Function] = list()
+
     def __init__(
         self,
         scope: Construct,
         construct_id: str,
         lambda_config: LambdaStackConfig,
-        dynamodb_config: DynamoDbStackConfig,
-        cognito_user_pool_id: str,
-        cognito_user_pool_client_id: str,
         **kwargs: Any
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         lambdas_config = lambda_config["lambdas"]
-        games_table_config = dynamodb_config["gamesTable"]
 
         layer_config = lambda_config["layer"]
         self.dependency_lambda_layer = lambda_.LayerVersion(
@@ -40,6 +38,7 @@ class BeerpongoLambdaStack(Stack):
         connect_websocket_config = lambdas_config["lambda_on_connect"]
         create_game_config = lambdas_config["lambda_on_create_game"]
         join_game_config = lambdas_config["lambda_on_join_game"]
+        guest_join_game_config = lambdas_config["lambda_on_join_game_as_guest"]
         update_game_config = lambdas_config["lambda_on_update_game"]
 
         # Create Websocket lambdas
@@ -51,12 +50,9 @@ class BeerpongoLambdaStack(Stack):
             code=lambda_.Code.from_asset(
                 authenticate_websocket_config["code"]
             ),
-            environment={
-                "USER_POOL_ID": cognito_user_pool_id,
-                "APP_CLIENT_ID": cognito_user_pool_client_id,
-            },
             layers=self.lambda_layers,
         )
+        self.lambdas.append(self.lambda_authenticate_websocket)
 
         self.lambda_connect_websocket = lambda_.Function(
             self,
@@ -66,6 +62,7 @@ class BeerpongoLambdaStack(Stack):
             code=lambda_.Code.from_asset(connect_websocket_config["code"]),
             layers=self.lambda_layers,
         )
+        self.lambdas.append(self.lambda_connect_websocket)
 
         self.lambda_on_create_game = lambda_.Function(
             self,
@@ -73,9 +70,9 @@ class BeerpongoLambdaStack(Stack):
             runtime=lambda_.Runtime(create_game_config["runtime"]),
             handler=create_game_config["handler"],
             code=lambda_.Code.from_asset(create_game_config["code"]),
-            environment={"DB_TABLE": games_table_config["tableName"]},
             layers=self.lambda_layers,
         )
+        self.lambdas.append(self.lambda_on_create_game)
 
         self.lambda_on_join_game = lambda_.Function(
             self,
@@ -83,9 +80,19 @@ class BeerpongoLambdaStack(Stack):
             runtime=lambda_.Runtime(join_game_config["runtime"]),
             handler=join_game_config["handler"],
             code=lambda_.Code.from_asset(join_game_config["code"]),
-            environment={"DB_TABLE": games_table_config["tableName"]},
             layers=self.lambda_layers,
         )
+        self.lambdas.append(self.lambda_on_join_game)
+
+        self.lambda_on_join_game_as_guest = lambda_.Function(
+            self,
+            id=guest_join_game_config["name"],
+            runtime=lambda_.Runtime(guest_join_game_config["runtime"]),
+            handler=guest_join_game_config["handler"],
+            code=lambda_.Code.from_asset(guest_join_game_config["code"]),
+            layers=self.lambda_layers,
+        )
+        self.lambdas.append(self.lambda_on_join_game_as_guest)
 
         self.lambda_on_update_game = lambda_.Function(
             self,
@@ -93,34 +100,23 @@ class BeerpongoLambdaStack(Stack):
             runtime=lambda_.Runtime(update_game_config["runtime"]),
             handler=update_game_config["handler"],
             code=lambda_.Code.from_asset(update_game_config["code"]),
-            environment={"DB_TABLE": games_table_config["tableName"]},
             layers=self.lambda_layers,
         )
+        self.lambdas.append(self.lambda_on_update_game)
 
-        self.lambda_on_create_game.add_to_role_policy(
-            PolicyStatement(
-                actions=["dynamodb:GetItem", "dynamodb:PutItem"],
-                resources=["*"],
-            )
+        default_policy = PolicyStatement(
+            actions=[
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "execute-api:ManageConnections",
+            ],
+            resources=["*"],
         )
 
-        self.lambda_on_join_game.add_to_role_policy(
-            PolicyStatement(
-                actions=["dynamodb:GetItem", "dynamodb:PutItem"],
-                resources=["*"],
-            )
-        )
-
-        self.lambda_on_update_game.add_to_role_policy(
-            PolicyStatement(
-                actions=[
-                    "dynamodb:GetItem",
-                    "dynamodb:PutItem",
-                    'execute-api:ManageConnections',
-                ],
-                resources=["*"],
-            )
-        )
+        self.lambda_on_create_game.add_to_role_policy(default_policy)
+        self.lambda_on_join_game.add_to_role_policy(default_policy)
+        self.lambda_on_join_game_as_guest.add_to_role_policy(default_policy)
+        self.lambda_on_update_game.add_to_role_policy(default_policy)
 
         self.lambda_authenticate_websocket.add_permission(
             principal=ServicePrincipal('apigateway.amazonaws.com'),
@@ -144,6 +140,12 @@ class BeerpongoLambdaStack(Stack):
             principal=ServicePrincipal('apigateway.amazonaws.com'),
             action='lambda:InvokeFunction',
             id="apigateway-ws-join-game-permission",
+        )
+
+        self.lambda_on_join_game_as_guest.add_permission(
+            principal=ServicePrincipal('apigateway.amazonaws.com'),
+            action='lambda:InvokeFunction',
+            id="apigateway-ws-join-game-as-guest-permission",
         )
 
         self.lambda_on_update_game.add_permission(

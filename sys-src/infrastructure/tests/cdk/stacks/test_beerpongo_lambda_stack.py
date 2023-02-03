@@ -10,9 +10,6 @@ def lambda_stack(app, mock_config):
         app,
         construct_id="BeerpongoLambdaStack",
         lambda_config=mock_config["lambdaStack"],
-        dynamodb_config=mock_config["dynamodbStack"],
-        cognito_user_pool_id="TEST_POOL_ID",
-        cognito_user_pool_client_id="TEST_CLIENT_ID",
     )
 
 
@@ -107,6 +104,29 @@ def test_join_lambda(app, lambda_stack, template: Template):
             "Code": {
                 "S3Bucket": lambda_on_join_game_name,
                 "S3Key": asset_lambda_on_join_game.s3_object_key,
+            },
+            "Layers": [Match.any_value()],
+        },
+    )
+
+
+def test_join_as_guest_lambda(app, lambda_stack, template: Template):
+    asset_lambda_on_join_game_as_guest = Asset(
+        lambda_stack,
+        "lambda_on_join_game_as_guest",
+        path="./../backend/src/",
+    )
+    lambda_on_join_game_as_guest_name = lambda_stack.resolve(
+        asset_lambda_on_join_game_as_guest.s3_bucket_name
+    )
+    template.has_resource_properties(
+        "AWS::Lambda::Function",
+        {
+            "Handler": "websocket_handler.on_join_game_as_guest",
+            "Runtime": "python3.9",
+            "Code": {
+                "S3Bucket": lambda_on_join_game_as_guest_name,
+                "S3Key": asset_lambda_on_join_game_as_guest.s3_object_key,
             },
             "Layers": [Match.any_value()],
         },

@@ -28,10 +28,12 @@ def get_config(cdk_app: aws_cdk.App) -> Optional[CdkConfig]:
     try:
         env = cdk_app.node.try_get_context("config")
         with open(
-            file="./config/" + env + ".yaml", mode="r", encoding="utf8"
-        ) as stream:
+            file="./config/default.yaml", mode="r", encoding="utf8"
+        ) as file:
             try:
-                c = cast(CdkConfig, yaml.safe_load(stream))
+                content = file.read()
+                content = content.replace("{CONFIG_NAME}", env)
+                c = cast(CdkConfig, yaml.safe_load(content))
                 c["configName"] = env
             except yaml.YAMLError as e:
                 _logger.error(e)
@@ -51,7 +53,7 @@ if config is None:
     _logger.error("No config loaded")
 else:
     # Create DynamoDB stack
-    BeerpongoDynamoDbStack(
+    DynamoDbStack = BeerpongoDynamoDbStack(
         app, config["dynamodbStack"]["stackName"], config["dynamodbStack"]
     )
 
@@ -72,17 +74,33 @@ else:
     )
 
     # Create API-Gateway websocket stack
-    BeerpongoApiGatewayWebsocketStack(
+    ApiGatewayStack = BeerpongoApiGatewayWebsocketStack(
         app,
         config["apiGatewayWebsocketStack"]["stackName"],
         config["apiGatewayWebsocketStack"],
         route_lambdas=RouteLambdas(
             createGameRoute=LambdaStack.lambda_on_create_game,
             joinGameRoute=LambdaStack.lambda_on_join_game,
+            joinAsGuestGameRoute=LambdaStack.lambda_on_join_game_as_guest,
             updateGameRoute=LambdaStack.lambda_on_update_game,
         ),
         auth_handler=LambdaStack.lambda_authenticate_websocket,
         connect_handler=LambdaStack.lambda_connect_websocket,
     )
+
+    # Set Lambda environment
+    lambda_environment = (
+        {
+            "USER_POOL_ID": CognitoStack.user_pool.user_pool_id,
+            "APP_CLIENT_ID": CognitoStack.user_pool_client.user_pool_client_id,
+            "DB_TABLE": DynamoDbStack.table.table_name,
+            "WS_API_URL": ApiGatewayStack.web_socket_api.api_endpoint.replace(
+                'wss://', ''
+            ),
+        },
+    )
+    for lambda_function in LambdaStack.lambdas:
+        for key, value in lambda_environment:
+            lambda_function.add_environment(key, value)
 
     app.synth()

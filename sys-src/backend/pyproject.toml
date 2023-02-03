@@ -3,6 +3,7 @@ testpaths = "./tests"
 pythonpath = [
     "./src"
 ]
+log_cli_level = "INFO"
 
 [tool.flake8]
 exclude = "requirements"
@@ -40,6 +41,9 @@ show_error_codes = true
 warn_unused_ignores = true
 disallow_any_unimported = true
 warn_return_any = false
+exclude = [
+    '^test\.'
+]
 
 [[tool.mypy.overrides]]
 module = "boto3.*"

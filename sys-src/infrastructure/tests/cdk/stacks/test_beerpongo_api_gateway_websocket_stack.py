@@ -24,9 +24,6 @@ def lambda_stack(app, mock_config):
         app,
         construct_id="BeerpongoLambdaStack",
         lambda_config=mock_config["lambdaStack"],
-        dynamodb_config=mock_config["dynamodbStack"],
-        cognito_user_pool_id="TEST_POOL_ID",
-        cognito_user_pool_client_id="TEST_CLIENT_ID",
     )
 
 
@@ -35,6 +32,7 @@ def route_lambdas(lambda_stack):
     yield {
         "createGameRoute": lambda_stack.lambda_on_create_game,
         "joinGameRoute": lambda_stack.lambda_on_join_game,
+        "joinAsGuestGameRoute": lambda_stack.lambda_on_join_game_as_guest,
         "updateGameRoute": lambda_stack.lambda_on_update_game,
     }
 
@@ -128,6 +126,27 @@ def test_beerpongo_api_gateway_websocket_join_game_route(template: Template):
             },
         },
     )
+
+    def test_beerpongo_api_gateway_websocket_join_game_as_guest_route(
+        template: Template,
+    ):
+        template.has_resource_properties(
+            "AWS::ApiGatewayV2::Route",
+            {
+                "ApiId": {"Ref": Match.any_value()},
+                "RouteKey": "JoinGameAsGuest",
+                "AuthorizationType": "NONE",
+                "Target": {
+                    "Fn::JoinAsGuest": [
+                        "",
+                        [
+                            "integrations/",
+                            {"Ref": Match.any_value()},
+                        ],
+                    ]
+                },
+            },
+        )
 
 
 def test_beerpongo_api_gateway_websocket_update_game_route(template: Template):

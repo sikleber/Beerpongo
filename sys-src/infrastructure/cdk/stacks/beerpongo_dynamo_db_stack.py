@@ -16,16 +16,20 @@ class BeerpongoDynamoDbStack(Stack):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        games_table_config = config["gamesTable"]
+        table_config = config["table"]
 
-        # Create DynamoDB games table with 'GameId' as String partition key
-        self.games_table = dynamodb.Table(
+        # Create DynamoDB table with 'PK' partition key as String
+        # and 'SK' as sort key String
+        self.table = dynamodb.Table(
             self,
-            id=games_table_config["id"],
-            table_name=games_table_config["tableName"],
+            id=table_config["id"],
+            table_name=table_config["tableName"],
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
             partition_key=dynamodb.Attribute(
-                name="GameId", type=dynamodb.AttributeType.STRING
+                name="PK", type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="SK", type=dynamodb.AttributeType.STRING
             ),
         )

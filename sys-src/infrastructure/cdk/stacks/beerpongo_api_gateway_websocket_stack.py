@@ -74,6 +74,17 @@ class BeerpongoApiGatewayWebsocketStack(Stack):
             ),
         )
 
+        join_as_guest_game_route_config = config["routes"][
+            "joinAsGuestGameRoute"
+        ]
+        self.join_as_guest_game_route = self.web_socket_api.add_route(
+            join_as_guest_game_route_config["key"],
+            integration=WebSocketLambdaIntegration(
+                join_as_guest_game_route_config["id"],
+                route_lambdas["joinAsGuestGameRoute"],
+            ),
+        )
+
         update_game_route_config = config["routes"]["updateGameRoute"]
         self.update_game_route = self.web_socket_api.add_route(
             update_game_route_config["key"],
@@ -96,6 +107,14 @@ class BeerpongoApiGatewayWebsocketStack(Stack):
             join_game_route_config["responseId"],
             api_id=self.web_socket_api.api_id,
             route_id=self.join_game_route.route_id,
+            route_response_key="$default",
+        )
+
+        CfnRouteResponse(
+            self,
+            join_as_guest_game_route_config["responseId"],
+            api_id=self.web_socket_api.api_id,
+            route_id=self.join_as_guest_game_route.route_id,
             route_response_key="$default",
         )
 

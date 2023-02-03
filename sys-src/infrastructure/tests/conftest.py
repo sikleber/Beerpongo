@@ -27,9 +27,9 @@ def mock_config() -> CdkConfig:
         configName="test",
         dynamodbStack=DynamoDbStackConfig(
             stackName='BeerpongoDynamoDbStackTest',
-            gamesTable=DynamoDbTableConfig(
-                id='BeerpongoTestGamesTable',
-                tableName='BeerpongoTestGamesTable',
+            table=DynamoDbTableConfig(
+                id='BeerpongoTestTable',
+                tableName='BeerpongoTestTable',
             ),
         ),
         lambdaStack=LambdaStackConfig(
@@ -64,6 +64,12 @@ def mock_config() -> CdkConfig:
                     handler="websocket_handler.on_join_game",
                     runtime="python3.9",
                 ),
+                lambda_on_join_game_as_guest=LambdaConfig(
+                    name="lambdaTest_joinGameAsGuest",
+                    code="./../backend/src",
+                    handler="websocket_handler.on_join_game_as_guest",
+                    runtime="python3.9",
+                ),
                 lambda_on_update_game=LambdaConfig(
                     name="lambdaTest_updateGame",
                     code="./../backend/src",
@@ -92,6 +98,11 @@ def mock_config() -> CdkConfig:
                     id='JoinGameIntegrationTest',
                     responseId='JoinGameIntegrationTest',
                     key='JoinGame',
+                ),
+                joinAsGuestGameRoute=ApiGatewayWebsocketStackRouteConfig(
+                    id='JoinAsGuestGameIntegrationTest',
+                    responseId='JoinAsGuestGameIntegrationTest',
+                    key='JoinAsGuestGame',
                 ),
                 updateGameRoute=ApiGatewayWebsocketStackRouteConfig(
                     id='UpdateGameIntegrationTest',
