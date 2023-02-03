@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8aff9d737cfeb217e7ad196e34c99be70188241b6b686c7c67b04de918cb033a"
+            "sha256": "8f13f78640eed7ba033984405f9668f9fcd0bf517230631077210dc15e29ed3d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -473,6 +473,7 @@
         },
         "boto3-stubs": {
             "extras": [
+                "apigatewaymanagementapi",
                 "dynamodb"
             ],
             "hashes": [
@@ -970,6 +971,13 @@
             ],
             "index": "pypi",
             "version": "==0.991"
+        },
+        "mypy-boto3-apigatewaymanagementapi": {
+            "hashes": [
+                "sha256:3307cf1fcd45efde72b95038815e0027319373ccb72c6dfd60ad915556bf407a",
+                "sha256:561959347560184fade7dabc83265b30720d8f1ea4b62565c33167331da61197"
+            ],
+            "version": "==1.26.0.post1"
         },
         "mypy-boto3-dynamodb": {
             "hashes": [

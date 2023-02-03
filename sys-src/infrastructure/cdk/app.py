@@ -85,18 +85,17 @@ else:
     )
 
     # Set Lambda environment
-    lambda_environment = (
-        {
-            "USER_POOL_ID": CognitoStack.user_pool.user_pool_id,
-            "APP_CLIENT_ID": CognitoStack.user_pool_client.user_pool_client_id,
-            "DB_TABLE": DynamoDbStack.table.table_name,
-            "WS_API_URL": ApiGatewayStack.web_socket_api.api_endpoint.replace(
-                'wss://', ''
-            ),
-        },
-    )
+    lambda_environment = {
+        "USER_POOL_ID": CognitoStack.user_pool.user_pool_id,
+        "APP_CLIENT_ID": CognitoStack.user_pool_client.user_pool_client_id,
+        "DB_TABLE": DynamoDbStack.table.table_name,
+        "WS_API_URL": ApiGatewayStack.web_socket_api.api_endpoint.replace(
+            'wss://', ''
+        ),
+    }
+
     for lambda_function in LambdaStack.lambdas:
         for key, value in lambda_environment:
-            lambda_function.add_environment(key, value)
+            lambda_function.add_environment(str(key), str(value))
 
     app.synth()
