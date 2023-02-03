@@ -63,14 +63,10 @@ else:
     )
 
     # Create Lambda stack
-    user_pool_client_id = CognitoStack.user_pool_client.user_pool_client_id
     LambdaStack = BeerpongoLambdaStack(
         app,
         config["lambdaStack"]["stackName"],
         lambda_config=config["lambdaStack"],
-        dynamodb_config=config["dynamodbStack"],
-        cognito_user_pool_id=CognitoStack.user_pool.user_pool_id,
-        cognito_user_pool_client_id=user_pool_client_id,
     )
 
     # Create API-Gateway websocket stack
