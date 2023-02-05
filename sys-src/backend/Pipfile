@@ -8,6 +8,7 @@ boto3 = "*"
 moto = "*"
 typing-extensions = "*"
 pyjwt = "*"
+boto3-stubs = {extras = ["apigatewaymanagementapi", "dynamodb"], version = "*"}
 
 [dev-packages]
 moto = "*"
@@ -19,6 +20,9 @@ pytest-cov = "*"
 mypy = "*"
 pytest-shutil = "*"
 pyproject-flake8 = "*"
+mock = "*"
+install = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.9"

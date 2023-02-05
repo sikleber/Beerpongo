@@ -16,9 +16,13 @@ jobs:
       with:
         python-version: '3.9'
         cache: 'pipenv'
+    - name: Install CDK
+      run: npm install -g aws-cdk
     - name: Prepare
       run: make prepare
     - name: Check Formatting
       run: make formatting-checks
     - name: Test
       run: make test
+    - name: Deploy Dryrun
+      run: make deploy-infrastructure-dryrun

@@ -1,0 +1,81 @@
+region: 'eu-central-1'
+
+dynamodbStack:
+  stackName: 'BeerpongoDynamoDbStack-{CONFIG_NAME}'
+  table:
+    id: 'BeerpongoTable-{CONFIG_NAME}'
+    tableName: 'BeerpongoTable-{CONFIG_NAME}'
+
+lambdaStack:
+  stackName: 'BeerpongoLambdaStack-{CONFIG_NAME}'
+  layer:
+    id: "backend_lambda_layer_{CONFIG_NAME}"
+    code: "./../backend/lambda_layers/backend_lambda_layer.zip"
+    runtime: 'python3.9'
+  lambdas:
+    lambda_authenticate_websocket:
+      name: "lambda_authenticate_websocket_{CONFIG_NAME}"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_authenticate"
+      runtime: 'python3.9'
+    lambda_on_connect:
+      name: "lambda_connect_websocket_{CONFIG_NAME}"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_connect"
+      runtime: "python3.9"
+    lambda_on_create_game:
+      name: "lambda_createGame_{CONFIG_NAME}"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_create_game"
+      runtime: "python3.9"
+    lambda_on_join_game:
+      name: "lambda_joinGame_{CONFIG_NAME}"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_join_game"
+      runtime: "python3.9"
+    lambda_on_join_game_as_guest:
+      name: "lambda_joinGameAsGuest_{CONFIG_NAME}"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_join_game_as_guest"
+      runtime: "python3.9"
+    lambda_on_update_game:
+      name: "lambda_updateGame_{CONFIG_NAME}"
+      code: "./../backend/src"
+      handler: "websocket_handler.on_update_game"
+      runtime: "python3.9"
+
+cognitoStack:
+  stackName: 'BeerpongoCognitoStack-{CONFIG_NAME}'
+  userPool:
+    id: 'BeerpongoUserPool-{CONFIG_NAME}'
+    name: 'BeerpongoUserPool-{CONFIG_NAME}'
+  userPoolClient:
+    id: 'BeerpongoUserPoolClient-{CONFIG_NAME}'
+    name: 'BeerpongoUserPoolClient-{CONFIG_NAME}'
+
+apiGatewayWebsocketStack:
+  stackName: 'BeerpongoAPIGatewayWebsocketStack-{CONFIG_NAME}'
+  id: 'BeerpongoWebsocketApi-{CONFIG_NAME}'
+  name: 'BeerpongoWebsocketApi-{CONFIG_NAME}'
+  authorizerId: 'CognitoUserAuthorizer'
+  connectRouteIntegrationId: 'ConnectWebsocketIntegration-{CONFIG_NAME}'
+  stage:
+    id: 'BeerpongoWebsocketStage-{CONFIG_NAME}'
+    name: '{CONFIG_NAME}'
+  routes:
+    createGameRoute:
+      id: 'CreateGameIntegration-{CONFIG_NAME}'
+      responseId: 'CreateGameIntegration-{CONFIG_NAME}'
+      key: 'CreateGame'
+    joinGameRoute:
+      id: 'JoinGameIntegration-{CONFIG_NAME}'
+      responseId: 'JoinGameIntegration-{CONFIG_NAME}'
+      key: 'JoinGame'
+    joinAsGuestGameRoute:
+      id: 'JoinAsGuestGameIntegration-{CONFIG_NAME}'
+      responseId: 'JoinAsGuestGameIntegration-{CONFIG_NAME}'
+      key: 'JoinGameAsGuest'
+    updateGameRoute:
+      id: 'UpdateGameIntegration-{CONFIG_NAME}'
+      responseId: 'UpdateGameIntegration'
+      key: 'UpdateGame'

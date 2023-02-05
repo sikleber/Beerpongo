@@ -1,6 +1,6 @@
 import pytest
 from aws_cdk.assertions import Template
-from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
+from stacks.dynamo_db_stack import BeerpongoDynamoDbStack
 
 
 @pytest.fixture
@@ -17,17 +17,19 @@ def template(dynamodb_stack):
     yield Template.from_stack(dynamodb_stack)
 
 
-def test_beerpongo_dynamo_db_games_table(template: Template):
+def test_beerpongo_dynamo_db_table(template: Template):
     template.has_resource_properties(
         "AWS::DynamoDB::Table",
         {
             "BillingMode": "PAY_PER_REQUEST",
-            "TableName": "BeerpongoTestGamesTable",
+            "TableName": "BeerpongoTestTable",
             "AttributeDefinitions": [
-                {"AttributeName": "GameId", "AttributeType": "S"},
+                {"AttributeName": "PK", "AttributeType": "S"},
+                {"AttributeName": "SK", "AttributeType": "S"},
             ],
             "KeySchema": [
-                {"AttributeName": "GameId", "KeyType": "HASH"},
+                {"AttributeName": "PK", "KeyType": "HASH"},
+                {"AttributeName": "SK", "KeyType": "RANGE"},
             ],
         },
     )

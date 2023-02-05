@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Dict, TypedDict
 
 from aws_cdk.aws_lambda import IFunction
 
@@ -18,7 +18,7 @@ class DynamoDbTableConfig(TypedDict):
 
 
 class DynamoDbStackConfig(BaseStackConfig):
-    gamesTable: DynamoDbTableConfig
+    table: DynamoDbTableConfig
 
 
 class LambdaConfig(TypedDict):
@@ -39,12 +39,14 @@ class LambdaStackLambdasConfig(TypedDict):
     lambda_on_connect: LambdaConfig
     lambda_on_create_game: LambdaConfig
     lambda_on_join_game: LambdaConfig
+    lambda_on_join_game_as_guest: LambdaConfig
     lambda_on_update_game: LambdaConfig
 
 
 class LambdaStackConfig(BaseStackConfig):
     layer: LambdaLayerConfig
     lambdas: LambdaStackLambdasConfig
+    environment_variables: Dict[str, str]
 
 
 class CognitoStackConfig(BaseStackConfig):
@@ -61,6 +63,7 @@ class ApiGatewayWebsocketStackRouteConfig(TypedDict):
 class ApiGatewayWebsocketStackRoutesConfig(TypedDict):
     createGameRoute: ApiGatewayWebsocketStackRouteConfig
     joinGameRoute: ApiGatewayWebsocketStackRouteConfig
+    joinAsGuestGameRoute: ApiGatewayWebsocketStackRouteConfig
     updateGameRoute: ApiGatewayWebsocketStackRouteConfig
 
 
@@ -75,6 +78,7 @@ class ApiGatewayWebsocketStackConfig(BaseStackConfig):
 
 class CdkConfig(TypedDict):
     configName: str
+    region: str
     dynamodbStack: DynamoDbStackConfig
     lambdaStack: LambdaStackConfig
     cognitoStack: CognitoStackConfig
@@ -84,4 +88,5 @@ class CdkConfig(TypedDict):
 class RouteLambdas(TypedDict):
     createGameRoute: IFunction
     joinGameRoute: IFunction
+    joinAsGuestGameRoute: IFunction
     updateGameRoute: IFunction
