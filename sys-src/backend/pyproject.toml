@@ -6,7 +6,7 @@ pythonpath = [
 log_cli_level = "INFO"
 
 [tool.flake8]
-exclude = "requirements"
+exclude = "layer"
 
 [tool.black]
 skip-string-normalization = true
@@ -24,13 +24,13 @@ exclude = '''
   | build
   | dist
   | backend.out
-  | requirements
+  | layer
 )/
 '''
 
 [tool.isort]
 profile = "black"
-skip = ["backend.out", ".venv", "requirements"]
+skip = ["backend.out", ".venv", "layer"]
 line_length = 79
 
 [tool.mypy]

@@ -24,10 +24,10 @@ start: start-docker-frontend
 install-infrastructure:
 	cd sys-src/infrastructure && pipenv sync
 
-test-infrastructure: .install-dev-infrastructure
+test-infrastructure: .install-dev-infrastructure create-python-layer-zip
 	cd sys-src/infrastructure && pipenv run mypy cdk && pipenv run pytest
 
-test-coverage-infrastructure: .install-dev-infrastructure
+test-coverage-infrastructure: .install-dev-infrastructure create-python-layer-zip
 	cd sys-src/infrastructure && pipenv run pytest --cov
 
 formatting-checks-infrastructure: .install-dev-infrastructure
@@ -92,6 +92,5 @@ start-docker-frontend: build-docker-frontend
 
 ################ OTHER ################
 create-python-layer-zip: install-backend
-	cd sys-src/backend && pipenv requirements > requirements.txt && \
-	pip install -r requirements.txt --no-deps --python-version 3.9 --platform manylinux2014_x86_64 --implementation cp --only-binary=:all: --upgrade -t ./requirements/python && \
-	pipenv run python scripts/zip_backend_layer.py
+	cd sys-src/backend && pipenv requirements > ./layer/requirements.txt && \
+	pip install -r ./layer/requirements.txt --no-deps --python-version 3.9 --platform manylinux2014_aarch64 --implementation cp --only-binary=:all: --upgrade -t ./layer/python

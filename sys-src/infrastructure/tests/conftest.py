@@ -37,45 +37,39 @@ def mock_config() -> CdkConfig:
             stackName="LambdaStackTest",
             layer=LambdaLayerConfig(
                 id="backend_lambda_layer",
-                code="./../backend/lambda_layers/backend_lambda_layer.zip",
-                runtime='python3.9',
+                pipenvDir="./../backend",
+                sourcesDir="./../backend/layer",
             ),
             lambdas=LambdaStackLambdasConfig(
                 lambda_authenticate_websocket=LambdaConfig(
                     name="lambdaTest_authenticate_websocket",
                     code="./../backend/src",
                     handler="websocket_handler.on_authenticate",
-                    runtime='python3.9',
                 ),
                 lambda_on_connect=LambdaConfig(
                     name="lambdaTest_connect_websocket",
                     code="./../backend/src",
                     handler="websocket_handler.on_connect",
-                    runtime='python3.9',
                 ),
                 lambda_on_create_game=LambdaConfig(
                     name="lambdaTest_createGame",
                     code="./../backend/src",
                     handler="websocket_handler.on_create_game",
-                    runtime="python3.9",
                 ),
                 lambda_on_join_game=LambdaConfig(
                     name="lambdaTest_joinGame",
                     code="./../backend/src",
                     handler="websocket_handler.on_join_game",
-                    runtime="python3.9",
                 ),
                 lambda_on_join_game_as_guest=LambdaConfig(
                     name="lambdaTest_joinGameAsGuest",
                     code="./../backend/src",
                     handler="websocket_handler.on_join_game_as_guest",
-                    runtime="python3.9",
                 ),
                 lambda_on_update_game=LambdaConfig(
                     name="lambdaTest_updateGame",
                     code="./../backend/src",
                     handler="websocket_handler.on_update_game",
-                    runtime="python3.9",
                 ),
             ),
         ),

@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aws-cdk-lib = "==2.24.1"
+aws-cdk-lib = "==2.63.2"
 constructs = "<11.0.0,>=10.0.0"
 pyyaml = "*"
 "aws-cdk.aws-apigatewayv2-integrations-alpha" = "*"
