@@ -49,13 +49,14 @@ class InstanceManager:
             UserGameRepository, UserGameRepository(table=self._dynamodb_table)
         )
 
-    @property
-    def _api_client(self) -> ApiGatewayManagementApiClient:
+    def _api_client(
+        self, api_domain_name: str, api_stage: str
+    ) -> ApiGatewayManagementApiClient:
         return self._initialized.setdefault(
             ApiGatewayManagementApiClient,
             boto3.client(
                 "apigatewaymanagementapi",
-                endpoint_url=os.environ["WS_API_URL"],
+                endpoint_url=f'https://{api_domain_name}/{api_stage}',
             ),
         )
 
@@ -95,11 +96,12 @@ class InstanceManager:
             ),
         )
 
-    @property
-    def websocket_service(self) -> WebsocketService:
+    def websocket_service(
+        self, api_domain_name: str, api_stage: str
+    ) -> WebsocketService:
         return self._initialized.setdefault(
             WebsocketService,
-            WebsocketService(self._api_client),
+            WebsocketService(self._api_client(api_domain_name, api_stage)),
         )
 
 

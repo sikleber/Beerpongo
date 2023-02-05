@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Dict, TypedDict
 
 from aws_cdk.aws_lambda import IFunction
 
@@ -46,6 +46,7 @@ class LambdaStackLambdasConfig(TypedDict):
 class LambdaStackConfig(BaseStackConfig):
     layer: LambdaLayerConfig
     lambdas: LambdaStackLambdasConfig
+    environment_variables: Dict[str, str]
 
 
 class CognitoStackConfig(BaseStackConfig):
@@ -77,6 +78,7 @@ class ApiGatewayWebsocketStackConfig(BaseStackConfig):
 
 class CdkConfig(TypedDict):
     configName: str
+    region: str
     dynamodbStack: DynamoDbStackConfig
     lambdaStack: LambdaStackConfig
     cognitoStack: CognitoStackConfig

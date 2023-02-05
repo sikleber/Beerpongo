@@ -39,6 +39,9 @@ format-infrastructure: .install-dev-infrastructure
 deploy-infrastructure: install-infrastructure create-python-layer-zip test-infrastructure
 	cd sys-src/infrastructure && pipenv run cdk deploy -c config=$(CONFIG) --profile $(PROFILE) $(STACK) --require-approval never
 
+deploy-infrastructure-dryrun: install-infrastructure create-python-layer-zip test-infrastructure
+	cd sys-src/infrastructure && pipenv run cdk synth -c config=test --all
+
 destroy-infrastructure: install-infrastructure
 	cd sys-src/infrastructure && pipenv run cdk destroy -c config=$(CONFIG) --require-approval never --profile $(PROFILE) $(STACK)
 

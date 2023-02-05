@@ -6,12 +6,12 @@ import aws_cdk
 import aws_cdk as cdk
 import yaml
 from custom_types import CdkConfig, RouteLambdas
-from stacks.beerpongo_api_gateway_websocket_stack import (
+from stacks.api_gateway_websocket_stack import (
     BeerpongoApiGatewayWebsocketStack,
 )
-from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
-from stacks.beerpongo_dynamo_db_stack import BeerpongoDynamoDbStack
-from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
+from stacks.cognito_stack import BeerpongoCognitoStack
+from stacks.dynamo_db_stack import BeerpongoDynamoDbStack
+from stacks.lambda_stack import BeerpongoLambdaStack
 
 _logger = logging.getLogger("app")
 
@@ -52,14 +52,22 @@ config = get_config(app)
 if config is None:
     _logger.error("No config loaded")
 else:
+    default_env = {'region': config["region"]}
+
     # Create DynamoDB stack
     DynamoDbStack = BeerpongoDynamoDbStack(
-        app, config["dynamodbStack"]["stackName"], config["dynamodbStack"]
+        app,
+        config["dynamodbStack"]["stackName"],
+        config["dynamodbStack"],
+        env=default_env,
     )
 
     # Create Cognito stack
     CognitoStack = BeerpongoCognitoStack(
-        app, config["cognitoStack"]["stackName"], config["cognitoStack"]
+        app,
+        config["cognitoStack"]["stackName"],
+        config["cognitoStack"],
+        env=default_env,
     )
 
     # Create Lambda stack
@@ -67,6 +75,12 @@ else:
         app,
         config["lambdaStack"]["stackName"],
         lambda_config=config["lambdaStack"],
+        env=default_env,
+        environment_variables={
+            "USER_POOL_ID": CognitoStack.user_pool.user_pool_id,
+            "APP_CLIENT_ID": CognitoStack.user_pool_client.user_pool_client_id,
+            "DB_TABLE": DynamoDbStack.table.table_name,
+        },
     )
 
     # Create API-Gateway websocket stack
@@ -74,6 +88,7 @@ else:
         app,
         config["apiGatewayWebsocketStack"]["stackName"],
         config["apiGatewayWebsocketStack"],
+        env=default_env,
         route_lambdas=RouteLambdas(
             createGameRoute=LambdaStack.lambda_on_create_game,
             joinGameRoute=LambdaStack.lambda_on_join_game,
@@ -83,19 +98,5 @@ else:
         auth_handler=LambdaStack.lambda_authenticate_websocket,
         connect_handler=LambdaStack.lambda_connect_websocket,
     )
-
-    # Set Lambda environment
-    lambda_environment = {
-        "USER_POOL_ID": CognitoStack.user_pool.user_pool_id,
-        "APP_CLIENT_ID": CognitoStack.user_pool_client.user_pool_client_id,
-        "DB_TABLE": DynamoDbStack.table.table_name,
-        "WS_API_URL": ApiGatewayStack.web_socket_api.api_endpoint.replace(
-            'wss://', ''
-        ),
-    }
-
-    for lambda_function in LambdaStack.lambdas:
-        for key, value in lambda_environment:
-            lambda_function.add_environment(str(key), str(value))
 
     app.synth()

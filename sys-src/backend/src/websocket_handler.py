@@ -17,6 +17,11 @@ class WebsocketEventAuthorizer(TypedDict):
     username: str
 
 
+class WebsocketRequestContext(TypedDict):
+    domainName: str
+    stage: str
+
+
 class WebsocketResponse(TypedDict, total=False):
     statusCode: Required[int]
     body: str
@@ -63,6 +68,17 @@ def on_authenticate(event: dict, context: dict) -> AuthenticationResponse:
 
 
 def on_connect(event: dict, context: dict) -> WebsocketResponse:
+    try:
+        authorizer: WebsocketEventAuthorizer = event["requestContext"][
+            "authorizer"
+        ]
+
+        logging.info(f'Connected {authorizer["username"]}')
+        logging.info(f'Event={event}')
+        logging.info(f'Context={context}')
+    except Exception:
+        logging.exception("Failed to log connection")
+
     return WebsocketResponse(statusCode=200)
 
 
@@ -106,7 +122,7 @@ def on_join_game(event: dict, context: dict) -> WebsocketResponse:
                 "No game id specified in event body={0}".format(body)
             )
 
-        game_side_str: Optional[str] = body.get("GameId")
+        game_side_str: Optional[str] = body.get("GameSide")
         if game_side_str == "A":
             game_side = GameSide.A
         elif game_side_str == "B":
@@ -124,7 +140,9 @@ def on_join_game(event: dict, context: dict) -> WebsocketResponse:
             side=game_side,
         )
 
-        return _process_changed_game_entity(game_entity, connection_id)
+        return _process_changed_game_entity(
+            game_entity, connection_id, event["requestContext"]
+        )
     except EntityNotFoundException:
         logging.exception("No game found to join")
         return {"statusCode": 404}
@@ -154,7 +172,9 @@ def on_join_game_as_guest(event: dict, context: dict) -> WebsocketResponse:
             user_connection_id=connection_id,
         )
 
-        return _process_changed_game_entity(game_entity, connection_id)
+        return _process_changed_game_entity(
+            game_entity, connection_id, event["requestContext"]
+        )
     except EntityNotFoundException:
         logging.exception("No game found to join")
         return {"statusCode": 404}
@@ -179,7 +199,9 @@ def on_update_game(event: dict, context: dict) -> WebsocketResponse:
             game_id, state_action
         )
 
-        return _process_changed_game_entity(game_entity, connection_id)
+        return _process_changed_game_entity(
+            game_entity, connection_id, event["requestContext"]
+        )
     except EntityNotFoundException:
         logging.exception("No game found to update")
         return WebsocketResponse(statusCode=404)
@@ -189,13 +211,17 @@ def on_update_game(event: dict, context: dict) -> WebsocketResponse:
 
 
 def _process_changed_game_entity(
-    game_entity: GameEntity, current_connection_id: str
+    game_entity: GameEntity,
+    current_connection_id: str,
+    request_context: WebsocketRequestContext,
 ) -> WebsocketResponse:
     response_data = _to_default_response(game_entity)
     _callback_game_users(
         game_entity=game_entity,
         current_connection_id=current_connection_id,
         data=response_data,
+        api_domain_name=request_context["domainName"],
+        api_stage=request_context["stage"],
     )
 
     return WebsocketResponse(statusCode=200, body=response_data)
@@ -205,6 +231,8 @@ def _callback_game_users(
     game_entity: GameEntity,
     current_connection_id: str,
     data: str,
+    api_domain_name: str,
+    api_stage: str,
 ) -> None:
     try:
         user_connections = game_entity["ASideConnections"]
@@ -218,7 +246,7 @@ def _callback_game_users(
             )
         )
 
-        service = manager.websocket_service
+        service = manager.websocket_service(api_domain_name, api_stage)
         service.callback_websocket_connections(
             connection_ids=connection_ids,
             callback_data=data,

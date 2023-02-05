@@ -1,7 +1,7 @@
 import pytest
 from aws_cdk.assertions import Match, Template
 from aws_cdk.aws_s3_assets import Asset
-from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
+from stacks.lambda_stack import BeerpongoLambdaStack
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ def lambda_stack(app, mock_config):
         app,
         construct_id="BeerpongoLambdaStack",
         lambda_config=mock_config["lambdaStack"],
+        environment_variables={"test": "testValue"},
     )
 
 

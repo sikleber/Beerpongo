@@ -2,10 +2,10 @@ import os
 
 import pytest
 from aws_cdk.assertions import Match, Template
-from stacks.beerpongo_api_gateway_websocket_stack import (
+from stacks.api_gateway_websocket_stack import (
     BeerpongoApiGatewayWebsocketStack,
 )
-from stacks.beerpongo_lambda_stack import BeerpongoLambdaStack
+from stacks.lambda_stack import BeerpongoLambdaStack
 
 
 @pytest.fixture(scope="function")
@@ -24,6 +24,7 @@ def lambda_stack(app, mock_config):
         app,
         construct_id="BeerpongoLambdaStack",
         lambda_config=mock_config["lambdaStack"],
+        environment_variables={},
     )
 
 

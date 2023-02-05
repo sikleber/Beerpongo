@@ -25,6 +25,7 @@ def app():
 def mock_config() -> CdkConfig:
     yield CdkConfig(
         configName="test",
+        region="eu-central-1",
         dynamodbStack=DynamoDbStackConfig(
             stackName='BeerpongoDynamoDbStackTest',
             table=DynamoDbTableConfig(

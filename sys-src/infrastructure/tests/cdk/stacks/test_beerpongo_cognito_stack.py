@@ -1,6 +1,6 @@
 import pytest
 from aws_cdk.assertions import Match, Template
-from stacks.beerpongo_cognito_stack import BeerpongoCognitoStack
+from stacks.cognito_stack import BeerpongoCognitoStack
 
 
 @pytest.fixture

@@ -22,3 +22,5 @@ jobs:
       run: make formatting-checks
     - name: Test
       run: make test
+    - name: Deploy Dryrun
+      run: make deploy-infrastructure-dryrun

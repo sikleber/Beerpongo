@@ -97,7 +97,7 @@ def test_on_update_game(mock_manager, dynamodb):
     game_service = manager.game_service
     mock_manager.game_service = game_service
     mock_websocket = Mock()
-    mock_manager.websocket_service = mock_websocket
+    mock_manager.websocket_service.return_value = mock_websocket
 
     test_game_id = "GAME_ID"
     initial_username = "INITIAL_USER"
@@ -125,15 +125,23 @@ def test_on_update_game(mock_manager, dynamodb):
     assert response["BSideUsers"] == list()
     assert response["GuestUsers"] == list()
     assert response["State"] == test_state_action
+    mock_manager.websocket_service.assert_called_with("testDomain", "test")
     mock_websocket.callback_websocket_connections.assert_called_with(
         connection_ids=[initial_connection_id],
         callback_data=ANY,
     )
 
 
-def get_request_context(username: str, connection_id: str) -> ANY:
+def get_request_context(
+    username: str,
+    connection_id: str,
+    stage: str = "test",
+    domain_name: str = "testDomain",
+) -> ANY:
     return {
         "connectionId": connection_id,
+        "stage": stage,
+        "domainName": domain_name,
         "authorizer": WebsocketEventAuthorizer(
             username=username,
             email_verified=True,
