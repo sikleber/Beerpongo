@@ -92,5 +92,5 @@ start-docker-frontend: build-docker-frontend
 
 ################ OTHER ################
 create-python-layer-zip: install-backend
-	cd sys-src/backend && pipenv requirements > ./layer/requirements.txt && \
+	cd sys-src/backend && mkdir ./layer/python  pipenv requirements > ./layer/requirements.txt && \
 	pip install -r ./layer/requirements.txt --no-deps --python-version 3.9 --platform manylinux2014_aarch64 --implementation cp --only-binary=:all: --upgrade -t ./layer/python
