@@ -1,10 +1,20 @@
+import hashlib
+import json
 from typing import Any, Dict, List, Sequence
 
 import aws_cdk.aws_lambda as lambda_
-from aws_cdk import Stack
+import constants
+from aws_cdk import AssetHashType, Stack
 from aws_cdk.aws_iam import PolicyStatement, ServicePrincipal
 from constructs import Construct
 from custom_types import LambdaStackConfig
+
+
+def _get_lock_file_hash(pipenv_dir: str) -> str:
+    with open(pipenv_dir + "/Pipfile.lock", mode='r', encoding='utf-8') as f:
+        lock_file = json.load(f)
+        lock_file_str = f'{json.dumps(lock_file["default"])}'
+    return hashlib.sha256(lock_file_str.encode('utf-8')).hexdigest()
 
 
 class BeerpongoLambdaStack(Stack):
@@ -16,21 +26,27 @@ class BeerpongoLambdaStack(Stack):
         construct_id: str,
         lambda_config: LambdaStackConfig,
         environment_variables: Dict[str, str],
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         lambdas_config = lambda_config["lambdas"]
 
         layer_config = lambda_config["layer"]
-        self.dependency_lambda_layer = lambda_.LayerVersion(
+        self.python_lambda_layer = lambda_.LayerVersion(
             self,
             layer_config["id"],
-            code=lambda_.Code.from_asset(layer_config["code"]),
-            compatible_runtimes=[lambda_.Runtime(layer_config["runtime"])],
+            code=lambda_.Code.from_asset(
+                layer_config["sourcesDir"],
+                asset_hash_type=AssetHashType.CUSTOM,
+                asset_hash=_get_lock_file_hash(layer_config["pipenvDir"]),
+                exclude=['requirements.txt'],
+            ),
+            compatible_runtimes=[constants.RUNTIME],
+            compatible_architectures=[constants.ARCHITECTURE],
         )
 
         self.lambda_layers = [
-            self.dependency_lambda_layer,
+            self.python_lambda_layer,
         ]
 
         initial_policy: Sequence[PolicyStatement] = [
@@ -57,7 +73,7 @@ class BeerpongoLambdaStack(Stack):
         self.lambda_authenticate_websocket = lambda_.Function(
             self,
             id=authenticate_websocket_config["name"],
-            runtime=lambda_.Runtime(authenticate_websocket_config["runtime"]),
+            runtime=constants.RUNTIME,
             handler=authenticate_websocket_config["handler"],
             code=lambda_.Code.from_asset(
                 authenticate_websocket_config["code"]
@@ -65,66 +81,72 @@ class BeerpongoLambdaStack(Stack):
             layers=self.lambda_layers,
             environment=environment_variables,
             initial_policy=initial_policy,
+            architecture=constants.ARCHITECTURE,
         )
         self.lambdas.append(self.lambda_authenticate_websocket)
 
         self.lambda_connect_websocket = lambda_.Function(
             self,
             id=connect_websocket_config["name"],
-            runtime=lambda_.Runtime(connect_websocket_config["runtime"]),
+            runtime=constants.RUNTIME,
             handler=connect_websocket_config["handler"],
             code=lambda_.Code.from_asset(connect_websocket_config["code"]),
             layers=self.lambda_layers,
             environment=environment_variables,
             initial_policy=initial_policy,
+            architecture=constants.ARCHITECTURE,
         )
         self.lambdas.append(self.lambda_connect_websocket)
 
         self.lambda_on_create_game = lambda_.Function(
             self,
             id=create_game_config["name"],
-            runtime=lambda_.Runtime(create_game_config["runtime"]),
+            runtime=constants.RUNTIME,
             handler=create_game_config["handler"],
             code=lambda_.Code.from_asset(create_game_config["code"]),
             layers=self.lambda_layers,
             environment=environment_variables,
             initial_policy=initial_policy,
+            architecture=constants.ARCHITECTURE,
         )
         self.lambdas.append(self.lambda_on_create_game)
 
         self.lambda_on_join_game = lambda_.Function(
             self,
             id=join_game_config["name"],
-            runtime=lambda_.Runtime(join_game_config["runtime"]),
+            runtime=constants.RUNTIME,
             handler=join_game_config["handler"],
             code=lambda_.Code.from_asset(join_game_config["code"]),
             layers=self.lambda_layers,
             environment=environment_variables,
             initial_policy=initial_policy,
+            architecture=constants.ARCHITECTURE,
         )
         self.lambdas.append(self.lambda_on_join_game)
 
         self.lambda_on_join_game_as_guest = lambda_.Function(
             self,
             id=guest_join_game_config["name"],
-            runtime=lambda_.Runtime(guest_join_game_config["runtime"]),
+            runtime=constants.RUNTIME,
             handler=guest_join_game_config["handler"],
             code=lambda_.Code.from_asset(guest_join_game_config["code"]),
             layers=self.lambda_layers,
             environment=environment_variables,
             initial_policy=initial_policy,
+            architecture=constants.ARCHITECTURE,
         )
         self.lambdas.append(self.lambda_on_join_game_as_guest)
 
         self.lambda_on_update_game = lambda_.Function(
             self,
             id=update_game_config["name"],
-            runtime=lambda_.Runtime(update_game_config["runtime"]),
+            runtime=constants.RUNTIME,
             handler=update_game_config["handler"],
             code=lambda_.Code.from_asset(update_game_config["code"]),
             layers=self.lambda_layers,
             environment=environment_variables,
             initial_policy=initial_policy,
+            architecture=constants.ARCHITECTURE,
         )
         self.lambdas.append(self.lambda_on_update_game)
 

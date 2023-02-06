@@ -1,4 +1,4 @@
-from typing import Dict, TypedDict
+from typing import TypedDict
 
 from aws_cdk.aws_lambda import IFunction
 
@@ -25,13 +25,12 @@ class LambdaConfig(TypedDict):
     name: str
     code: str
     handler: str
-    runtime: str
 
 
 class LambdaLayerConfig(TypedDict):
     id: str
-    code: str
-    runtime: str
+    pipenvDir: str
+    sourcesDir: str
 
 
 class LambdaStackLambdasConfig(TypedDict):
@@ -46,7 +45,6 @@ class LambdaStackLambdasConfig(TypedDict):
 class LambdaStackConfig(BaseStackConfig):
     layer: LambdaLayerConfig
     lambdas: LambdaStackLambdasConfig
-    environment_variables: Dict[str, str]
 
 
 class CognitoStackConfig(BaseStackConfig):
