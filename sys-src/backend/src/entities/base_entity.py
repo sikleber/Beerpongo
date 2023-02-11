@@ -68,13 +68,13 @@ class EntityRepository(BaseRepository, Generic[TRawEntity, TEntity], ABC):
         return cast(TEntity, entity)
 
     def convert_to_raw(self, entity: TEntity) -> TRawEntity:
-        raw_entity: RawEntity = RawEntity(
-            PK=self.prefix + cast(Any, entity)[self.entity_pk_field],
-            SK=self.prefix + cast(Any, entity)[self.entity_pk_field],
+        entity_copy = entity.copy()
+        del entity_copy[self.entity_pk_field]
+        raw_entity = cast(TRawEntity, entity_copy)
+        raw_entity["PK"] = (
+            self.prefix + cast(Any, entity)[self.entity_pk_field]
         )
-        for key in entity:
-            if key != self.entity_pk_field:
-                cast(Any, raw_entity)[key] = cast(Any, entity)[key]
+        raw_entity["SK"] = raw_entity["PK"]
 
         return cast(TRawEntity, raw_entity)
 
