@@ -99,13 +99,16 @@ class RelationRepository(
         return cast(TRelation, entity)
 
     def _convert_to_raw(self, entity: TRelation) -> TRawRelation:
-        raw_entity: RawRelation = RawRelation(
-            PK=self.pk_prefix + cast(Any, entity)[self.relation_pk_field],
-            SK=self.sk_prefix + cast(Any, entity)[self.relation_sk_field],
+        entity_copy = entity.copy()
+        del entity_copy[self.relation_pk_field]
+        del entity_copy[self.relation_sk_field]
+        raw_entity = cast(TRawRelation, entity_copy)
+        raw_entity["PK"] = (
+            self.pk_prefix + cast(Any, entity)[self.relation_pk_field]
         )
-        for key in entity:
-            if key != self.relation_pk_field and key != self.relation_sk_field:
-                cast(Any, raw_entity)[key] = cast(Any, entity)[key]
+        raw_entity["SK"] = (
+            self.sk_prefix + cast(Any, entity)[self.relation_sk_field]
+        )
 
         return cast(TRawRelation, raw_entity)
 
