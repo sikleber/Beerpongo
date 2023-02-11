@@ -31,7 +31,7 @@ def test_authenticate_lambda(app, lambda_stack, template: Template):
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
-            "Handler": "websocket_handler.on_authenticate",
+            "Handler": "websocket_handler.handler",
             "Runtime": "python3.9",
             "Code": {
                 "S3Bucket": lambda_authenticate,
@@ -54,7 +54,7 @@ def test_connect_lambda(app, lambda_stack, template: Template):
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
-            "Handler": "websocket_handler.on_connect",
+            "Handler": "websocket_handler.handler",
             "Runtime": "python3.9",
             "Code": {
                 "S3Bucket": lambda_on_connect,
@@ -77,7 +77,7 @@ def test_create_lambda(app, lambda_stack, template: Template):
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
-            "Handler": "websocket_handler.on_create_game",
+            "Handler": "websocket_handler.handler",
             "Runtime": "python3.9",
             "Code": {
                 "S3Bucket": lambda_on_create_game_name,
@@ -100,7 +100,7 @@ def test_join_lambda(app, lambda_stack, template: Template):
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
-            "Handler": "websocket_handler.on_join_game",
+            "Handler": "websocket_handler.handler",
             "Runtime": "python3.9",
             "Code": {
                 "S3Bucket": lambda_on_join_game_name,
@@ -123,7 +123,7 @@ def test_join_as_guest_lambda(app, lambda_stack, template: Template):
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
-            "Handler": "websocket_handler.on_join_game_as_guest",
+            "Handler": "websocket_handler.handler",
             "Runtime": "python3.9",
             "Code": {
                 "S3Bucket": lambda_on_join_game_as_guest_name,
@@ -146,7 +146,7 @@ def test_update_lambda(app, lambda_stack, template: Template):
     template.has_resource_properties(
         "AWS::Lambda::Function",
         {
-            "Handler": "websocket_handler.on_update_game",
+            "Handler": "websocket_handler.handler",
             "Runtime": "python3.9",
             "Code": {
                 "S3Bucket": lambda_on_update_game_name,
