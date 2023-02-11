@@ -35,7 +35,7 @@ def test_on_create_game(dynamodb):
     )
 
     min_time = get_time()
-    response = on_create_game(event, {})
+    response = on_create_game(event)
     max_time = get_time()
 
     # assert response
@@ -77,7 +77,7 @@ def test_on_create_existing_game_id_fails(dynamodb):
     event = dict()
     event["body"] = json.dumps({"GameId": test_game_id})
     event["requestContext"] = get_request_context("ANOTHER", "ANOTHER")
-    response = on_create_game(event, {})
+    response = on_create_game(event)
 
     # assert response
     assert response == {"statusCode": 500}
@@ -115,7 +115,7 @@ def test_on_update_game(mock_manager, dynamodb):
     )
     event["body"] = json.dumps(event_body)
     event["requestContext"] = get_request_context("ANOTHER", "ANOTHER")
-    response_data = on_update_game(event, {})
+    response_data = on_update_game(event)
 
     assert response_data == {"statusCode": 200, "body": ANY}
     response = json.loads(response_data["body"])

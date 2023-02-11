@@ -23,8 +23,6 @@ class DynamoDbStackConfig(BaseStackConfig):
 
 class LambdaConfig(TypedDict):
     name: str
-    code: str
-    handler: str
 
 
 class LambdaLayerConfig(TypedDict):

@@ -1,6 +1,7 @@
 import json
 import logging
-from typing import List, Optional, TypedDict
+import os
+from typing import List, Optional, TypedDict, Union
 
 from typing_extensions import Required
 
@@ -58,7 +59,36 @@ class DefaultResponseBody(BaseGameBody):
     State: str
 
 
-def on_authenticate(event: dict, context: dict) -> AuthenticationResponse:
+def handler(
+    event: dict, context: dict
+) -> Union[AuthenticationResponse, WebsocketResponse]:
+    handler_env = os.environ["HANDLER"]
+
+    response: Union[
+        AuthenticationResponse, WebsocketResponse
+    ] = WebsocketResponse(statusCode=404)
+    if handler_env == "AUTHENTICATE":
+        response = on_authenticate(event)
+    elif handler_env == "CONNECT":
+        response = on_connect(event)
+    elif handler_env == "CREATE_GAME":
+        response = on_create_game(event)
+    elif handler_env == "JOIN_GAME":
+        response = on_join_game(event)
+    elif handler_env == "JOIN_GAME_AS_GUEST":
+        response = on_join_game_as_guest(event)
+    elif handler_env == "UPDATE_GAME":
+        response = on_update_game(event)
+    else:
+        logging.exception(
+            "No handler found for lambda environment with HANDLER=%s",
+            handler_env,
+        )
+
+    return response
+
+
+def on_authenticate(event: dict) -> AuthenticationResponse:
     token = event["headers"]["Authorization"]
     auth_service: CognitoJwtAuthenticationService = (
         manager.cognito_jwt_authentication_service
@@ -67,7 +97,7 @@ def on_authenticate(event: dict, context: dict) -> AuthenticationResponse:
     return auth_service.authenticate(token, event["methodArn"])
 
 
-def on_connect(event: dict, context: dict) -> WebsocketResponse:
+def on_connect(event: dict) -> WebsocketResponse:
     try:
         authorizer: WebsocketEventAuthorizer = event["requestContext"][
             "authorizer"
@@ -75,14 +105,13 @@ def on_connect(event: dict, context: dict) -> WebsocketResponse:
 
         logging.info(f'Connected {authorizer["username"]}')
         logging.info(f'Event={event}')
-        logging.info(f'Context={context}')
     except Exception:
         logging.exception("Failed to log connection")
 
     return WebsocketResponse(statusCode=200)
 
 
-def on_create_game(event: dict, context: dict) -> WebsocketResponse:
+def on_create_game(event: dict) -> WebsocketResponse:
     try:
         connection_id: str = event["requestContext"]["connectionId"]
         authorizer: WebsocketEventAuthorizer = event["requestContext"][
@@ -108,7 +137,7 @@ def on_create_game(event: dict, context: dict) -> WebsocketResponse:
         return WebsocketResponse(statusCode=500)
 
 
-def on_join_game(event: dict, context: dict) -> WebsocketResponse:
+def on_join_game(event: dict) -> WebsocketResponse:
     try:
         body: JoinGameRequestBody = json.loads(event["body"])
         authorizer: WebsocketEventAuthorizer = event["requestContext"][
@@ -151,7 +180,7 @@ def on_join_game(event: dict, context: dict) -> WebsocketResponse:
         return WebsocketResponse(statusCode=500)
 
 
-def on_join_game_as_guest(event: dict, context: dict) -> WebsocketResponse:
+def on_join_game_as_guest(event: dict) -> WebsocketResponse:
     try:
         body: GuestJoinGameRequestBody = json.loads(event["body"])
         authorizer: WebsocketEventAuthorizer = event["requestContext"][
@@ -183,7 +212,7 @@ def on_join_game_as_guest(event: dict, context: dict) -> WebsocketResponse:
         return WebsocketResponse(statusCode=500)
 
 
-def on_update_game(event: dict, context: dict) -> WebsocketResponse:
+def on_update_game(event: dict) -> WebsocketResponse:
     try:
         body: UpdateGameRequestBody = json.loads(event["body"])
         connection_id: str = event["requestContext"]["connectionId"]

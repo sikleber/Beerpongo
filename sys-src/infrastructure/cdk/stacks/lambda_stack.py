@@ -69,17 +69,20 @@ class BeerpongoLambdaStack(Stack):
         guest_join_game_config = lambdas_config["lambda_on_join_game_as_guest"]
         update_game_config = lambdas_config["lambda_on_update_game"]
 
+        handler = "websocket_handler.handler"
+        code = lambda_.Code.from_asset("./../backend/src")
+
         # Create Websocket lambdas
         self.lambda_authenticate_websocket = lambda_.Function(
             self,
             id=authenticate_websocket_config["name"],
             runtime=constants.RUNTIME,
-            handler=authenticate_websocket_config["handler"],
-            code=lambda_.Code.from_asset(
-                authenticate_websocket_config["code"]
-            ),
+            handler=handler,
+            code=code,
             layers=self.lambda_layers,
-            environment=environment_variables,
+            environment=dict(
+                environment_variables, **{"HANDLER": "AUTHENTICATE"}
+            ),
             initial_policy=initial_policy,
             architecture=constants.ARCHITECTURE,
         )
@@ -89,10 +92,10 @@ class BeerpongoLambdaStack(Stack):
             self,
             id=connect_websocket_config["name"],
             runtime=constants.RUNTIME,
-            handler=connect_websocket_config["handler"],
-            code=lambda_.Code.from_asset(connect_websocket_config["code"]),
+            handler=handler,
+            code=code,
             layers=self.lambda_layers,
-            environment=environment_variables,
+            environment=dict(environment_variables, **{"HANDLER": "CONNECT"}),
             initial_policy=initial_policy,
             architecture=constants.ARCHITECTURE,
         )
@@ -102,10 +105,12 @@ class BeerpongoLambdaStack(Stack):
             self,
             id=create_game_config["name"],
             runtime=constants.RUNTIME,
-            handler=create_game_config["handler"],
-            code=lambda_.Code.from_asset(create_game_config["code"]),
+            handler=handler,
+            code=code,
             layers=self.lambda_layers,
-            environment=environment_variables,
+            environment=dict(
+                environment_variables, **{"HANDLER": "CREATE_GAME"}
+            ),
             initial_policy=initial_policy,
             architecture=constants.ARCHITECTURE,
         )
@@ -115,10 +120,12 @@ class BeerpongoLambdaStack(Stack):
             self,
             id=join_game_config["name"],
             runtime=constants.RUNTIME,
-            handler=join_game_config["handler"],
-            code=lambda_.Code.from_asset(join_game_config["code"]),
+            handler=handler,
+            code=code,
             layers=self.lambda_layers,
-            environment=environment_variables,
+            environment=dict(
+                environment_variables, **{"HANDLER": "JOIN_GAME"}
+            ),
             initial_policy=initial_policy,
             architecture=constants.ARCHITECTURE,
         )
@@ -128,10 +135,12 @@ class BeerpongoLambdaStack(Stack):
             self,
             id=guest_join_game_config["name"],
             runtime=constants.RUNTIME,
-            handler=guest_join_game_config["handler"],
-            code=lambda_.Code.from_asset(guest_join_game_config["code"]),
+            handler=handler,
+            code=code,
             layers=self.lambda_layers,
-            environment=environment_variables,
+            environment=dict(
+                environment_variables, **{"HANDLER": "JOIN_GAME_AS_GUEST"}
+            ),
             initial_policy=initial_policy,
             architecture=constants.ARCHITECTURE,
         )
@@ -141,10 +150,12 @@ class BeerpongoLambdaStack(Stack):
             self,
             id=update_game_config["name"],
             runtime=constants.RUNTIME,
-            handler=update_game_config["handler"],
-            code=lambda_.Code.from_asset(update_game_config["code"]),
+            handler=handler,
+            code=code,
             layers=self.lambda_layers,
-            environment=environment_variables,
+            environment=dict(
+                environment_variables, **{"HANDLER": "UPDATE_GAME"}
+            ),
             initial_policy=initial_policy,
             architecture=constants.ARCHITECTURE,
         )

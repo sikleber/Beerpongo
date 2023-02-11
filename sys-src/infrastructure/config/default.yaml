@@ -15,28 +15,16 @@ lambdaStack:
   lambdas:
     lambda_authenticate_websocket:
       name: "lambda_authenticate_websocket_{CONFIG_NAME}"
-      code: "./../backend/src"
-      handler: "websocket_handler.on_authenticate"
     lambda_on_connect:
       name: "lambda_connect_websocket_{CONFIG_NAME}"
-      code: "./../backend/src"
-      handler: "websocket_handler.on_connect"
     lambda_on_create_game:
       name: "lambda_createGame_{CONFIG_NAME}"
-      code: "./../backend/src"
-      handler: "websocket_handler.on_create_game"
     lambda_on_join_game:
       name: "lambda_joinGame_{CONFIG_NAME}"
-      code: "./../backend/src"
-      handler: "websocket_handler.on_join_game"
     lambda_on_join_game_as_guest:
       name: "lambda_joinGameAsGuest_{CONFIG_NAME}"
-      code: "./../backend/src"
-      handler: "websocket_handler.on_join_game_as_guest"
     lambda_on_update_game:
       name: "lambda_updateGame_{CONFIG_NAME}"
-      code: "./../backend/src"
-      handler: "websocket_handler.on_update_game"
 
 cognitoStack:
   stackName: 'BeerpongoCognitoStack-{CONFIG_NAME}'
