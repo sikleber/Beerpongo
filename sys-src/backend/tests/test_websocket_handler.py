@@ -3,11 +3,9 @@ import os
 from unittest.mock import ANY, Mock
 
 import mock
-from moto import mock_dynamodb
 
 from entities.custom_types import GameStatus
 from instance_manager import manager
-from tests.resources import create_games_table
 from utils import get_time
 from websocket_handler import (
     CreateGameRequestBody,
@@ -18,10 +16,8 @@ from websocket_handler import (
 )
 
 
-@mock_dynamodb
-def test_on_create_game(dynamodb):
-    db_table = create_games_table(dynamodb)
-    os.environ["DB_TABLE"] = db_table.name
+def test_on_create_game(dynamodb_table):
+    os.environ["DB_TABLE"] = dynamodb_table.name
     game_service = manager.game_service
 
     test_game_id = "GAME_ID"
@@ -59,10 +55,8 @@ def test_on_create_game(dynamodb):
     assert game_entity["GuestConnections"] == dict()
 
 
-@mock_dynamodb
-def test_on_create_existing_game_id_fails(dynamodb):
-    db_table = create_games_table(dynamodb)
-    os.environ["DB_TABLE"] = db_table.name
+def test_on_create_existing_game_id_fails(dynamodb_table):
+    os.environ["DB_TABLE"] = dynamodb_table.name
     game_service = manager.game_service
 
     test_game_id = "GAME_ID"
@@ -90,10 +84,8 @@ def test_on_create_existing_game_id_fails(dynamodb):
 
 
 @mock.patch("websocket_handler.manager")
-@mock_dynamodb
-def test_on_update_game(mock_manager, dynamodb):
-    db_table = create_games_table(dynamodb)
-    os.environ["DB_TABLE"] = db_table.name
+def test_on_update_game(mock_manager, dynamodb_table):
+    os.environ["DB_TABLE"] = dynamodb_table.name
     game_service = manager.game_service
     mock_manager.game_service = game_service
     mock_websocket = Mock()
