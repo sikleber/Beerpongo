@@ -31,6 +31,7 @@ def mock_config() -> CdkConfig:
             table=DynamoDbTableConfig(
                 id='BeerpongoTestTable',
                 tableName='BeerpongoTestTable',
+                gsiIndex='GSI_INDEX',
             ),
         ),
         lambdaStack=LambdaStackConfig(

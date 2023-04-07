@@ -33,3 +33,12 @@ class BeerpongoDynamoDbStack(Stack):
                 name="SK", type=dynamodb.AttributeType.STRING
             ),
         )
+
+        # Add global secondary index
+        # with 'SK' as partition key and 'PK' as sort key
+        self.table.add_global_secondary_index(
+            index_name=table_config['gsiIndex'],
+            partition_key=dynamodb.Attribute(name='SK', type=dynamodb.AttributeType.STRING),
+            sort_key=dynamodb.Attribute(name='PK', type=dynamodb.AttributeType.STRING),
+            projection_type=dynamodb.ProjectionType.ALL
+        )

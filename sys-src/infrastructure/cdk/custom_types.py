@@ -15,6 +15,7 @@ class BaseStackConfig(TypedDict):
 class DynamoDbTableConfig(TypedDict):
     id: str
     tableName: str
+    gsiIndex: str
 
 
 class DynamoDbStackConfig(BaseStackConfig):

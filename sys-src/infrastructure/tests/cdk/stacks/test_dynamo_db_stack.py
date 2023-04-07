@@ -33,3 +33,21 @@ def test_beerpongo_dynamo_db_table(template: Template):
             ],
         },
     )
+
+
+def test_beerpongo_dynamo_db_table_gsi(template: Template):
+    template.has_resource_properties(
+        "AWS::DynamoDB::Table",
+        {
+            "GlobalSecondaryIndexes": [
+                {
+                    "IndexName": "GSI_INDEX",
+                    "KeySchema": [
+                        {"AttributeName": "SK", "KeyType": "HASH"},
+                        {"AttributeName": "PK", "KeyType": "RANGE"},
+                    ],
+                    "Projection": {"ProjectionType": "ALL"},
+                }
+            ]
+        },
+    )
